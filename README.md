@@ -22,6 +22,7 @@ pip install selenium
 in some python script:
 
 import sys
+
 sys.path.insert(0,'/usr/lib/chromium-browser/chromedriver')
 
 # Необходимо установить для приложения:
