@@ -12,8 +12,11 @@
 # Установка selenium и chrome driver:
 
 apt-get update
+
 apt install chromium-chromedriver
+
 cp /usr/lib/chromium-browser/chromedriver /usr/bin
+
 pip install selenium
 
 in some python script:
