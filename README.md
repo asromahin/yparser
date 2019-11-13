@@ -9,6 +9,18 @@
 6) pip install requests
 7) pip install shutil
 
+# Установка selenium и chrome driver:
+
+apt-get update
+apt install chromium-chromedriver
+cp /usr/lib/chromium-browser/chromedriver /usr/bin
+pip install selenium
+
+in some python script:
+
+import sys
+sys.path.insert(0,'/usr/lib/chromium-browser/chromedriver')
+
 # Необходимо установить для приложения:
 1) pip install PyQt4
 2) pip install matplotlib
