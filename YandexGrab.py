@@ -2,8 +2,6 @@ from selenium import webdriver
 import requests
 import time
 from tqdm import tqdm
-import wget
-import urllib.request
 import numpy as np
 import shutil
 import pandas as pd
@@ -31,8 +29,10 @@ def get_image(url,savename):
             
 wd=init_wd() # init first time WebDriver
 
-wd.get('https://yandex.ru/images/search?from=&cbir_id=2493823%2FqVLmcTEkrh4VKrQOoygSiw&rpt=imagelike')
-
+#########################################################################################
+# this url change with yours url 
+wd.get('https://yandex.ru/images/search?from=&cbir_id=2493823%2FqVLmcTEkrh4VKrQOoygSiw&rpt=imagelike') 
+#########################################################################################
 
 r=wd.get_screenshot_as_png()
 with open('wd_init.png', 'wb') as f:
