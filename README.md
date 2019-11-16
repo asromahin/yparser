@@ -9,6 +9,22 @@
 6) pip install requests
 7) pip install shutil
 
+# Установка selenium и chrome driver:
+
+apt-get update
+
+apt install chromium-chromedriver
+
+cp /usr/lib/chromium-browser/chromedriver /usr/bin
+
+pip install selenium
+
+// in some python script:
+
+import sys
+
+sys.path.insert(0,'/usr/lib/chromium-browser/chromedriver')
+
 # Необходимо установить для приложения:
 1) pip install PyQt4
 2) pip install matplotlib
@@ -24,4 +40,4 @@
 8) Если загрузка быстро прошла, гораздо быстрее часа, это значит, что произошёл "непонятный глюк", который как-то связан с яндексом, пока не разобрался. Лечится перезапуском скрипта. Вообще ожидаемое время порядка 2 часов для 1500 изображений. У вас могут быть другие цифры.
 9) Результат лежит в папке data 
 10) Затем нужно почистить папку от плохо скаченных, а также от дубликатов, для этого запускаете скрипт clean_data.py
-11) Появится новая clean_data - это и есть ваш датасет
+11) Появится новая clean_data - это и есть ваши данные, которые надо просмотреть и выбрать уже необходимые
