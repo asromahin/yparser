@@ -89,7 +89,7 @@ class MainWindow(Qt.QWidget):
             os.mkdir(self.class_3_path)
             self.open_dir='../clean_data/'
             self.files=os.listdir(self.open_dir)
-            self.cur_ind=500
+            self.cur_ind=0
             #print(len(self.files))
             self.canv = PlotCanvas(self, width=12, height=9)
             self.canv.move(300,0)
