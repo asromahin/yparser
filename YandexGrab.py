@@ -5,7 +5,8 @@ from tqdm import tqdm
 import numpy as np
 import shutil
 import pandas as pd
-
+import os
+print('import all libs')
 def init_wd():
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
@@ -26,14 +27,15 @@ def get_image(url,savename):
                         break
                     handle.write(block)
     except: print('error response')
-            
+os.mkdir('data')            
 wd=init_wd() # init first time WebDriver
-
+print('init wd')
 #########################################################################################
 # this url change with yours url 
-wd.get('https://yandex.ru/images/search?from=&cbir_id=2493823%2FqVLmcTEkrh4VKrQOoygSiw&rpt=imagelike') 
+url='https://yandex.ru/images/search?cbir_id=2023924%2F0afKj_Og_xJroxa1rhD6ZQ&from=&rpt=imagelike'
+wd.get(url) 
 #########################################################################################
-
+print('get url:',url)
 r=wd.get_screenshot_as_png()
 with open('wd_init.png', 'wb') as f:
         f.write(r)

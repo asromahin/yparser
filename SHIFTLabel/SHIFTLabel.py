@@ -25,7 +25,7 @@ class Image_info(Qt.QWidget):
 class MainWindow(Qt.QWidget):
 	keyPressed = QtCore.pyqtSignal()
 	def keyPressEvent(self, event):
-		print(event.key())
+		#print(event.key())
 		#if event.key() == QtCore.Qt.Key_Q:
 	#		print ("Killing")
 #			self.deleteLater()
@@ -89,7 +89,7 @@ class MainWindow(Qt.QWidget):
             os.mkdir(self.class_3_path)
             self.open_dir='../clean_data/'
             self.files=os.listdir(self.open_dir)
-            self.cur_ind=0
+            self.cur_ind=500
             #print(len(self.files))
             self.canv = PlotCanvas(self, width=12, height=9)
             self.canv.move(300,0)
@@ -106,11 +106,11 @@ class MainWindow(Qt.QWidget):
 	def load_image(self,im_name):
                 self.im=cv2.imread(im_name,cv2.IMREAD_UNCHANGED)
                 self.canv.plot_im(self.im)
-                print(self.im.shape)
+                #print(self.im.shape)
 	def next_im(self):
 		if(self.cur_ind<len(self.files)):
 			
-			print(self.cur_ind)
+			#print(self.cur_ind)
 			self.load_image(self.open_dir+self.files[self.cur_ind])
 			#self.image_info.setText(self.files[self.cur_ind])
 			text_data=''
@@ -124,12 +124,18 @@ class MainWindow(Qt.QWidget):
 			self.show_data(text_data)
             
 	def save_categori(self,categori):
-		if(categori==1):
-			copyfile(self.open_dir+self.files[self.cur_ind],self.class_1_path+self.files[self.cur_ind])
-		if(categori==2):
-			copyfile(self.open_dir+self.files[self.cur_ind],self.class_2_path+self.files[self.cur_ind])
-		if(categori==3):
-			copyfile(self.open_dir+self.files[self.cur_ind],self.class_3_path+self.files[self.cur_ind])
+		try:
+			if(categori==1):
+                #copyfile(self.open_dir+self.files[self.cur_ind-1],self.class_1_path+self.files[self.cur_ind-1])
+				cv2.imwrite(self.class_1_path+self.files[self.cur_ind-1],self.im)
+			if(categori==2) :
+                #copyfile(self.open_dir+self.files[self.cur_ind-1],self.class_2_path+self.files[self.cur_ind-1])
+				cv2.imwrite(self.class_2_path+self.files[self.cur_ind-1],self.im)
+			if(categori==3):
+                #copyfile(self.open_dir+self.files[self.cur_ind-1],self.class_3_path+self.files[self.cur_ind-1])
+				cv2.imwrite(self.class_3_path+self.files[self.cur_ind-1],self.im)
+		except:
+			print('error')
 	def show_data(self,text):
 		self.image_info.setText(text)
         
@@ -144,6 +150,8 @@ class PlotCanvas(FigureCanvas):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
             self.fig = Figure(figsize=(width, height), dpi=dpi)
             #self.axes = fig.add_subplot(111)
+            self.ax = self.fig.add_subplot(111)
+            
             FigureCanvas.__init__(self, self.fig)
             self.setParent(parent)
             #cid = self.fig.canvas.mpl_connect('button_press_event', self.onclick)
@@ -156,12 +164,13 @@ class PlotCanvas(FigureCanvas):
 
 
     def plot_im(self,data):
-            self.data=data
+            #self.data=data
             #data = [random.random() for i in range(25)]
-            self.ax = self.figure.add_subplot(111)
+            
             #ax.plot(data, 'r-')
+            self.ax.clear()
             self.ax.axis('off')
-            self.ax.imshow(self.data)
+            self.ax.imshow(data)
             #ax.set_title('PyQt Matplotlib Example')
             self.draw()
     def onclick(self,event):
