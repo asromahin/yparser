@@ -26,13 +26,13 @@ def get_image(url,savename):
                     if not block:
                         break
                     handle.write(block)
-    except: print('error response')
+    except: print('error response',url)
 os.mkdir('data')            
 wd=init_wd() # init first time WebDriver
 print('init wd')
 #########################################################################################
 # this url change with yours url 
-url='https://yandex.ru/images/search?cbir_id=2023924%2F0afKj_Og_xJroxa1rhD6ZQ&from=&rpt=imagelike'
+url='https://yandex.ru/images/search?img_url=https%3A%2F%2Fwww.virage24.ru%2Fupload%2Fiblock%2F7e1%2F7e1d44035c13a6a11acdb12f0f0e539b.jpeg&cbir_id=2104436%2FIapc2H-9zYbUtn0AIt20Pw&rpt=imagelike&source=collections'
 wd.get(url) 
 #########################################################################################
 print('get url:',url)
@@ -66,10 +66,23 @@ print ('end parse imgs')
 list_data=[]
 for im in imgs:
     url=im.get_attribute('href')
-    list_data.append(url)
+    #print(url)
+    d=url.split('&')
+    for i in range(len(d)):
+        if('img_url' in d[i]):
+        
+            d2=d[i].split('=')[1]
+            url=d2.split('%3A')
+            url=':'.join(url)
+            url=url.split('%2F')
+            url='/'.join(url)
+            list_data.append(url)
+            break;
+    #print(list_data[0])
+result_url=list_data
 
 
-
+"""
 print('len list data=',len(list_data))
 print(list_data[0])
 result_url=[]
@@ -107,7 +120,8 @@ for i in tqdm(range(len(list_data))):
     #r=wd.get_screenshot_as_png()
     #with open('wd.png', 'wb') as f:
      #   f.write(r)
-print('save the url list')
+print('save the url list')"""
+
 pdata=pd.DataFrame(result_url,columns=['url'])
 pdata.to_csv('url_list.csv')
 
