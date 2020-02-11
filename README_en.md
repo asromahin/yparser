@@ -2,6 +2,8 @@ Python script to download images from 'Yandex Pictures'.
 
 Inspired by google-images-download
 
+Clone the repo 
+git clone https://github.com/asromahin/SHIFT_LAB_PARSER.git
 
 Libs that are necessary to install for the parser(if you don't have it installed yet):
 pip install opencv-python
