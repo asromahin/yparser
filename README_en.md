@@ -1,15 +1,13 @@
 
-#SHIFT_LAB_PARSER
+# SHIFT_LAB_PARSER
 
 
-Python script to download images from 'Yandex Pictures'.
+### Python script to download images from 'Yandex Pictures'. Inspired by google-images-download
 
-Inspired by google-images-download
-
-##Clone the repo 
+## Clone the repo 
 git clone https://github.com/asromahin/SHIFT_LAB_PARSER.git
 
-Libs that are necessary to install for the parser(if you don't have it installed yet):
+### Libs that are necessary to install for the parser(if you don't have it installed yet):
 pip install opencv-python
 pip install numpy
 pip install imagededup
@@ -18,26 +16,26 @@ pip install tqdm
 pip install requests
 pip install shutil
 
-//Install selenium and chrome driver:
+### Install selenium and chrome driver:
 
 apt-get update
 apt install chromium-chromedriver
 cp / usr / lib / chromium-browser / chromedriver / usr / bin
 pip install selenium
 
-// in some python script:
+## In python script:
 
 import sys
 
 sys.path.insert (0, '/ usr / lib / chromium-browser / chromedriver')
 
 
-Install for the application:
+## Install for the application:
 
 pip install PyQt4
 pip install matplotlib
 
-How to start the parser?
+## How to use the parser?
 
 1. Go  to yandex.ru / yandex.com and select the category "pictures"
 2. There is a camera icon next to the "find" button, click it.
