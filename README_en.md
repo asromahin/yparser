@@ -1,3 +1,7 @@
+
+SHIFT_LAB_PARSER
+
+
 Python script to download images from 'Yandex Pictures'.
 
 Inspired by google-images-download
