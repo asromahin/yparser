@@ -9,11 +9,17 @@ git clone https://github.com/asromahin/SHIFT_LAB_PARSER.git
 
 ### Libs that are necessary to install for the parser(if you don't have it installed yet):
 pip install opencv-python
+
 pip install numpy
+
 pip install imagededup
+
 pip install pandas
+
 pip install tqdm
+
 pip install requests
+
 pip install shutil
 
 ### Install selenium and chrome driver:
