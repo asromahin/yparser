@@ -23,19 +23,19 @@ apt install chromium-chromedriver
 cp / usr / lib / chromium-browser / chromedriver / usr / bin
 pip install selenium
 
-## In python script:
+### In python script:
 
 import sys
 
 sys.path.insert (0, '/ usr / lib / chromium-browser / chromedriver')
 
 
-## Install for the application:
+### Install for the application:
 
 pip install PyQt4
 pip install matplotlib
 
-## How to use the parser?
+### How to use the parser?
 
 1. Go  to yandex.ru / yandex.com and select the category "pictures"
 2. There is a camera icon next to the "find" button, click it.
