@@ -25,8 +25,11 @@ pip install shutil
 ### Install selenium and chrome driver:
 
 apt-get update
+
 apt install chromium-chromedriver
+
 cp / usr / lib / chromium-browser / chromedriver / usr / bin
+
 pip install selenium
 
 ### In python script:
