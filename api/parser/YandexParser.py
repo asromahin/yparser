@@ -61,7 +61,7 @@ class YandexParser():
         print('start grab images')
 
         for i in tqdm(range(len(self.image_links))):
-            utils.get_image(self.image_links[i], f'{self.save_path}/{i}.jpg')
+            utils.get_image_by_url(self.image_links[i], f'{self.save_path}/{i}.jpg')
 
         print('end grab images')
 
@@ -70,5 +70,9 @@ class YandexParser():
         self.get_links_to_images()
         self.get_images_by_links()
     def get_by_image(self,image_path=''):
-        utils.drag_and_drop_file()
+        self.wd.get('https://yandex.ru/images/')
+        self.wd.find_element_by_class_name('icon_type_cbir').click()
+        time.sleep(0.5)
+        target_panel=self.wd.find_element_by_class_name('cbir-panel__file-input')
+        utils.drag_and_drop_file(target_panel,image_path)
 

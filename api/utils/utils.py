@@ -1,4 +1,5 @@
 from selenium import webdriver
+import requests
 
 def init_wd():
     chrome_options = webdriver.ChromeOptions()
