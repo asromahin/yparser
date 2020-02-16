@@ -1,10 +1,11 @@
 import api.utils.utils as utils
-from time import time
+import time
 from tqdm import tqdm
 import pandas as pd
 
 class YandexParser():
-    def __init__(self,limit=0,url=None):
+    def __init__(self,save_path,limit=0,url=None):
+        self.save_path=save_path
         self.wd=utils.init_wd()
         self.limit=limit
         if(url):
@@ -60,6 +61,14 @@ class YandexParser():
         print('start grab images')
 
         for i in tqdm(range(len(self.image_links))):
-            utils.get_image(self.image_links[i], f'data/{i}.jpg')
+            utils.get_image(self.image_links[i], f'{self.save_path}/{i}.jpg')
 
         print('end grab images')
+
+    def get_by_url(self,url):
+        self.set_url(url)
+        self.get_links_to_images()
+        self.get_images_by_links()
+    def get_by_image(self,image_path=''):
+        utils.drag_and_drop_file()
+
