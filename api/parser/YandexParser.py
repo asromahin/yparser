@@ -90,16 +90,8 @@ class YandexParser():
             seconds+=1
             print('while',seconds,'seconds')
         time.sleep(1)
-        self.wd.find_element_by_class_name('i-bem').click()
-        start_url = self.wd.current_url
-        seconds = 0
-        limit_seconds = 60
-        while (True):
-            if (self.wd.current_url != start_url or seconds >= limit_seconds):
-                break
-            time.sleep(1)
-            seconds += 1
-            print('while', seconds, 'seconds')
+        start_url='https://yandex.ru'+self.wd.find_element_by_class_name('i-bem').get_attribute('href')
+        self.set_url(start_url)
 
         self.get_links_to_images()
         self.get_images_by_links()
