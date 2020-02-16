@@ -71,8 +71,14 @@ class YandexParser():
         self.get_images_by_links()
     def get_by_image(self,image_path=''):
         self.wd.get('https://yandex.ru/images/')
+        print('open https://yandex.ru/images/')
         self.wd.find_element_by_class_name('icon_type_cbir').click()
-        time.sleep(0.5)
+        time.sleep(1)
+        print(f'download image from {image_path}')
         target_panel=self.wd.find_element_by_class_name('cbir-panel__file-input')
         utils.drag_and_drop_file(target_panel,image_path)
+        print('wait download')
+        for i in range(len(20)):
+            print(i,self.wd.url)
+            time.sleep(0.1)
 
