@@ -14,6 +14,7 @@ class YandexParser():
         self.url=url
         if(self.wd.current_url!=self.url):
             self.wd.get(self.url)
+            time.sleep(1)
     def get_links_to_images(self):
 
         last_height = self.wd.execute_script("return document.body.scrollHeight")
