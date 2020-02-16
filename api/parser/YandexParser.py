@@ -79,7 +79,7 @@ class YandexParser():
         target_panel=self.wd.find_element_by_class_name('cbir-panel__file-input')
         utils.drag_and_drop_file(target_panel,image_path)
         print('wait download')
-        for i in range(20):
+        for i in range(100):
             print(i,self.wd.current_url)
             time.sleep(0.1)
 
