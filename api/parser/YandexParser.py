@@ -90,7 +90,9 @@ class YandexParser():
             seconds+=1
             print('while',seconds,'seconds')
         time.sleep(1)
-        start_url='https://yandex.ru'+self.wd.find_element_by_tag_name('a').find_element_by_class_name('link_ajax_yes').get_attribute('href')
+        elem=self.wd.find_element_by_tag_name('li')
+        elem = elem.find_element_by_tag_name('a')
+        start_url='https://yandex.ru'+elem.find_element_by_class_name('link').get_attribute('href')
         self.set_url(start_url)
 
         self.get_links_to_images()
