@@ -12,8 +12,9 @@ class YandexParser():
             self.set_url(url)
     def set_url(self,url):
         self.url=url
+        if(self.wd.current_url!=self.url):
+            self.wd.get(self.url)
     def get_links_to_images(self):
-        self.wd.get(self.url)
 
         last_height = self.wd.execute_script("return document.body.scrollHeight")
         last_len = 0
@@ -79,7 +80,31 @@ class YandexParser():
         target_panel=self.wd.find_element_by_class_name('cbir-panel__file-input')
         utils.drag_and_drop_file(target_panel,image_path)
         print('wait download')
-        for i in range(100):
-            print(i,self.wd.current_url)
-            time.sleep(0.1)
+        start_url=self.wd.current_url
+        seconds=0
+        limit_seconds=60
+        while(True):
+            if(self.wd.current_url!=start_url or seconds>=limit_seconds):
+                break
+            time.sleep(1)
+            seconds+=1
+            print('while',seconds,'seconds')
+
+        im=self.wd.find_element_by_class_name('similar__link')
+        im.click()
+        start_url = self.wd.current_url
+        seconds = 0
+        limit_seconds = 60
+        while (True):
+            if (self.wd.current_url != start_url or seconds >= limit_seconds):
+                break
+            time.sleep(1)
+            seconds += 1
+            print('while', seconds, 'seconds')
+
+        self.get_links_to_images()
+        self.get_images_by_links()
+
+
+
 
