@@ -72,6 +72,7 @@ class YandexParser():
     def get_by_image(self,image_path=''):
         self.wd.get('https://yandex.ru/images/')
         print('open https://yandex.ru/images/')
+        time.sleep(1)
         self.wd.find_element_by_class_name('icon_type_cbir').click()
         time.sleep(1)
         print(f'download image from {image_path}')
