@@ -94,8 +94,9 @@ class YandexParser():
         elem=self.wd.find_element_by_tag_name('li')
         elem = elem.find_element_by_tag_name('a')
         start_url='https://yandex.ru'+elem.get_attribute('href')
+        print('get url:',start_url)
         self.set_url(start_url)
-
+        print('go to page')
         self.get_links_to_images()
         self.get_images_by_links()
 
