@@ -90,7 +90,7 @@ class YandexParser():
             seconds+=1
             print('while',seconds,'seconds')
         time.sleep(1)
-        self.wd.find_element_by_class_name('link_js_inited').click()
+        self.wd.find_element_by_class_name('i-bem').click()
         start_url = self.wd.current_url
         seconds = 0
         limit_seconds = 60
