@@ -80,6 +80,6 @@ class YandexParser():
         utils.drag_and_drop_file(target_panel,image_path)
         print('wait download')
         for i in range(20):
-            print(i,self.wd.url)
+            print(i,self.wd.current_url)
             time.sleep(0.1)
 
