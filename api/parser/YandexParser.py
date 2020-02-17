@@ -105,7 +105,7 @@ class YandexParser():
         self.get_links_to_images()
         self.get_images_by_links()
 
-    def get_by_image_url(self,image_url='',save_screen=''):
+    def get_by_image_url(self,image_url='',save_screen='screenshot.png'):
         self.wd.get('https://yandex.ru/images/')
         print('open https://yandex.ru/images/')
         time.sleep(1)
@@ -113,7 +113,7 @@ class YandexParser():
         time.sleep(1)
         print(f'set image url {image_url}')
         target_panel=self.wd.find_element_by_class_name('input__control')
-        target_panel.setAttribute("value", image_url);
+        target_panel.__setattr__("value", image_url);
         self.wd.find_element_by_class_name('search-button').click()
         self.wd.get_screenshot_as_file(save_screen)
         print('image is set')
