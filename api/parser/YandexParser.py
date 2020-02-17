@@ -105,6 +105,38 @@ class YandexParser():
         self.get_links_to_images()
         self.get_images_by_links()
 
+    def get_by_image_url(self,image_url=''):
+        self.wd.get('https://yandex.ru/images/')
+        print('open https://yandex.ru/images/')
+        time.sleep(1)
+        self.wd.find_element_by_class_name('icon_type_cbir').click()
+        time.sleep(1)
+        print(f'set image url {image_url}')
+        target_panel=self.wd.find_element_by_class_name('input__control')
+        target_panel.send_keys(image_url)
+        self.wd.find_element_by_class_name('cbir-panel__input').click()
+        print('image is set')
+        start_url=self.wd.current_url
+        seconds=0
+        limit_seconds=60
+        while(True):
+            if(self.wd.current_url!=start_url or seconds>=limit_seconds):
+                break
+            time.sleep(1)
+            seconds+=1
+            print('while',seconds,'seconds')
+        time.sleep(1)
+
+        elem = self.wd.find_element_by_class_name('similar__thumbs')
+        elem = elem.find_element_by_tag_name('li')
+        elem = elem.find_element_by_tag_name('a')
+        start_url=elem.get_attribute('href')
+        print('get url:', start_url)
+        self.set_url(start_url)
+        print('go to page')
+        self.get_links_to_images()
+        self.get_images_by_links()
+
 
 
 
