@@ -16,11 +16,12 @@ def get_image_by_url(url,savename):
             response = requests.get(url,timeout=5)
             if not response.ok:
                     print(response)
-            with open(savename, 'wb') as handle:
-                for block in response.iter_content(1024):
-                    if not block:
-                        break
-                    handle.write(block)
+            else:
+                with open(savename, 'wb') as handle:
+                    for block in response.iter_content(1024):
+                        if not block:
+                            break
+                        handle.write(block)
     except: print('error response',url)
 
 JS_DROP_FILE = """
