@@ -112,9 +112,9 @@ class YandexParser():
         self.wd.find_element_by_class_name('icon_type_cbir').click()
         time.sleep(1)
         print(f'set image url {image_url}')
-        target_panel=self.wd.find_element_by_class_name('input__control')
+        target_panel=self.wd.find_element_by_class_name('cbir-panel__file-input')
         print(target_panel.get_attribute('value'))
-        target_panel.click()
+        #target_panel.click()
         target_panel.clear()
         target_panel.send_keys(image_url);
         print(target_panel.get_attribute('value'))
