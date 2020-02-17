@@ -81,47 +81,6 @@ for im in imgs:
     #print(list_data[0])
 result_url=list_data
 
-
-"""
-print('len list data=',len(list_data))
-print(list_data[0])
-result_url=[]
-#print(filename)
-for i in tqdm(range(len(list_data))):
-    #print(i)
-    wd.get(list_data[i])
-    #stime=np.random.randint(100,300)/100
-    #time.sleep(stime)
-    #if(i==0):
-    #r=wd.get_screenshot_as_png()
-    #with open('wd.png', 'wb') as f:
-     #           f.write(r)
-    
-    for el in wd.find_elements_by_tag_name('a'):
-        try: class_name=el.get_attribute('class')
-        except: break
-        if('sizes__download' in class_name):
-            #print(el.get_attribute('class'),el.get_attribute('href'))
-           
-            url=el.get_attribute('href')
-            result_url.append(url)
-            #print(i,url)
-            #try: wget.download(url,'data',bar=None)
-            #except: pass
-            #urllib.request.urlretrieve(url,'test.png')
-            #image=urllib.URLopener()
-            #image.retrieve(url,'test.png')
-            #print(url)
-            #get_image(url,'test.png')
-            break;
-         
-    if(len(result_url)==0 and i>5):
-            break;        
-    #r=wd.get_screenshot_as_png()
-    #with open('wd.png', 'wb') as f:
-     #   f.write(r)
-print('save the url list')"""
-
 pdata=pd.DataFrame(result_url,columns=['url'])
 pdata.to_csv('url_list.csv')
 
