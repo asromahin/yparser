@@ -113,7 +113,7 @@ class YandexParser():
         time.sleep(1)
         print(f'set image url {image_url}')
         target_panel=self.wd.find_element_by_class_name('input__control')
-        target_panel.send_keys(image_url)
+        target_panel.setAttribute("value", image_url);
         self.wd.find_element_by_class_name('cbir-panel__input').click()
         print('image is set')
         start_url=self.wd.current_url
