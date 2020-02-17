@@ -118,6 +118,7 @@ class YandexParser():
         target_panel.send_keys(image_url);
         print(target_panel.get_attribute('value'))
         self.wd.get_screenshot_as_file(save_screen)
+        time.sleep(2)
         self.wd.find_element_by_class_name('cbir-panel__search-button').click()
 
         print('image is set')
