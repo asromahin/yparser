@@ -70,10 +70,17 @@ class YandexParser():
 
         print('end grab images')
 
-    def get_by_url(self,url):
+    def get_by_text(self, text):
+        url = "https://yandex.ru/images/search?from=tabbar&text={}".format(text.replace(' ', '%20'))
         self.set_url(url)
         self.get_links_to_images()
         self.get_images_by_links()
+
+    def get_by_url(self, url):
+        self.set_url(url)
+        self.get_links_to_images()
+        self.get_images_by_links()
+
     def get_by_image(self,image_path=''):
         self.wd.get('https://yandex.ru/images/')
         print('open https://yandex.ru/images/')
@@ -109,32 +116,35 @@ class YandexParser():
         self.wd.get('https://yandex.ru/images/')
         print('open https://yandex.ru/images/')
         time.sleep(1)
-        self.wd.find_element_by_class_name('icon_type_cbir').click()
+        self.wd.find_element_by_class_name('input__cbir-button').click()
         time.sleep(1)
+
         print(f'set image url {image_url}')
-        target_panel=self.wd.find_element_by_class_name('input__control')
+        cur_elem = self.wd.find_element_by_class_name('cbir-panel__input')
+        target_panel=cur_elem.find_element_by_class_name('input__control')
         print(target_panel.get_attribute('value'))
         target_panel.click()
         target_panel.clear()
-        target_panel.send_keys(image_url);
+        target_panel.send_keys(image_url)
         print(target_panel.get_attribute('value'))
+
         self.wd.get_screenshot_as_file(save_screen)
         time.sleep(2)
-        self.wd.find_element_by_class_name('cbir-panel__search-button').click()
-
+        cur_elem.find_element_by_class_name('cbir-panel__search-button').click()
+        time.sleep(5)
         print('image is set')
         start_url=self.wd.current_url
         seconds=0
         limit_seconds=60
-        while(True):
-            if(self.wd.current_url!=start_url or seconds>=limit_seconds):
-                break
-            time.sleep(1)
-            seconds+=1
-            print('while',seconds,'seconds')
+        #while(True):
+        #    if(self.wd.current_url!=start_url or seconds>=limit_seconds):
+        #        break
+        #    time.sleep(1)
+        #    seconds+=1
+        #    print('while',seconds,'seconds')
         time.sleep(1)
-
-        elem = self.wd.find_element_by_class_name('similar__thumbs')
+        self.wd.save_screenshot('test.png')
+        elem = self.wd.find_element_by_class_name('cbir-similar__thumbs-inner')
         elem = elem.find_element_by_tag_name('li')
         elem = elem.find_element_by_tag_name('a')
         start_url=elem.get_attribute('href')
