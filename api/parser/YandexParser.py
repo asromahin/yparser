@@ -2,15 +2,20 @@ import api.utils.utils as utils
 import time
 from tqdm import tqdm
 import pandas as pd
+import os
 
-class YandexParser():
-    def __init__(self,save_path,limit=0,url=None):
-        self.save_path=save_path
-        self.wd=utils.init_wd()
-        self.limit=limit
-        if(url):
+
+class YandexParser:
+    def __init__(self, save_path, limit=0, url=None):
+        self.save_path = save_path
+        if not os.path.exists(self.save_path):
+            os.mkdir(self.save_path)
+        self.wd = utils.init_wd()
+        self.limit = limit
+        if url:
             self.set_url(url)
-    def set_url(self,url):
+
+    def set_url(self, url):
         self.url=url
         if(self.wd.current_url!=self.url):
             self.wd.get(self.url)
@@ -47,14 +52,14 @@ class YandexParser():
             # print(url)
             d = url.split('&')
             for i in range(len(d)):
-                if ('img_url' in d[i]):
+                if 'img_url' in d[i]:
                     d2 = d[i].split('=')[1]
                     url = d2.split('%3A')
                     url = ':'.join(url)
                     url = url.split('%2F')
                     url = '/'.join(url)
                     self.image_links.append(url)
-                    break;
+                    break
         print('end parse links for images')
         self.pdata = pd.DataFrame(self.image_links, columns=['url'])
 
@@ -98,8 +103,8 @@ class YandexParser():
             if(self.wd.current_url!=start_url or seconds>=limit_seconds):
                 break
             time.sleep(1)
-            seconds+=1
-            print('while',seconds,'seconds')
+            seconds += 1
+            print('while', seconds, 'seconds')
         time.sleep(1)
 
         elem = self.wd.find_element_by_class_name('similar__thumbs')
@@ -112,7 +117,7 @@ class YandexParser():
         self.get_links_to_images()
         self.get_images_by_links()
 
-    def get_by_image_url(self,image_url='',save_screen='screenshot.png'):
+    def get_by_image_url(self, image_url='', save_screen='screenshot.png'):
         self.wd.get('https://yandex.ru/images/')
         print('open https://yandex.ru/images/')
         time.sleep(1)

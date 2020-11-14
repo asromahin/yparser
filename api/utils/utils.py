@@ -1,6 +1,8 @@
 from selenium import webdriver
 import requests
 import sys
+import wget
+
 
 def init_wd():
     chrome_options = webdriver.ChromeOptions()
@@ -12,21 +14,38 @@ def init_wd():
     return wd
 
 
-def get_image_by_url(url,savename):
+def get_image_by_url(url, savename):
     try:
-            response = requests.get(url,timeout=5)
-            if not response.ok:
-                    print(response, url)
-            else:
-                with open(savename, 'wb') as handle:
-                    for block in response.iter_content(1024):
-                        if not block:
-                            break
-                        handle.write(block)
+        response = requests.get(
+            url,
+            timeout=5,
+            headers={'User-Agent': 'Chrome'},
+        )
+
+        if not response.ok:
+            print(response, url)
+        else:
+            with open(savename, 'wb') as handle:
+                for block in response.iter_content(1024):
+                    if not block:
+                        break
+                    handle.write(block)
+    except Exception as e:
+        print(url)
+        #sprint(e, e.message, url)
+
+
+"""
+def get_image_by_url(url, savename):
+    try:
+        #urllib.urlretrieve(url, savename)
+
+
+        #wget.download(url=url, out=savename)
     except :
         e = sys.exc_info()[0]
-        print(e, url)
-
+        print(e, str(e), url)
+"""
 JS_DROP_FILE = """
     var target = arguments[0],
         offsetX = arguments[1],
@@ -55,7 +74,10 @@ JS_DROP_FILE = """
     return input;
 """
 
+
 def drag_and_drop_file(drop_target, path):
     driver = drop_target.parent
     file_input = driver.execute_script(JS_DROP_FILE, drop_target, 0, 0)
     file_input.send_keys(path)
+
+
