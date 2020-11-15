@@ -1,7 +1,5 @@
 from selenium import webdriver
 import requests
-import sys
-import wget
 
 
 def init_wd():
@@ -15,11 +13,13 @@ def init_wd():
 
 
 def get_image_by_url(url, savename):
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
     try:
         response = requests.get(
             url,
             timeout=5,
-            headers={'User-Agent': 'Chrome'},
+            stream=True,
+            headers=headers,
         )
 
         if not response.ok:
@@ -32,20 +32,19 @@ def get_image_by_url(url, savename):
                     handle.write(block)
     except Exception as e:
         print(url)
-        #sprint(e, e.message, url)
+        print(e, url)
 
 
-"""
-def get_image_by_url(url, savename):
+def get_image_by_url2(url, savename):
     try:
-        #urllib.urlretrieve(url, savename)
-
-
+        #urllib.request.urlretrieve(url, savename)
         #wget.download(url=url, out=savename)
-    except :
-        e = sys.exc_info()[0]
-        print(e, str(e), url)
-"""
+        #fastai.core.download_url(url, savename, show_progress=False)
+        pass
+    except Exception as e:
+        print(url)
+        print(e, url)
+
 JS_DROP_FILE = """
     var target = arguments[0],
         offsetX = arguments[1],
