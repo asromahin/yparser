@@ -17,15 +17,16 @@ class YandexParser:
 
     def set_url(self, url):
         self.url=url
-        if(self.wd.current_url!=self.url):
+        if self.wd.current_url!=self.url:
             self.wd.get(self.url)
             time.sleep(1)
+
     def get_links_to_images(self):
 
         last_height = self.wd.execute_script("return document.body.scrollHeight")
         last_len = 0
         print('scroll page with images')
-        while (True):
+        while True:
             imgs = self.wd.find_elements_by_class_name('serp-item__thumb')
             print(len(imgs))
             b = self.wd.find_element_by_class_name('more_direction_next')
@@ -36,11 +37,11 @@ class YandexParser:
             time.sleep(1)
             new_height = self.wd.execute_script("return document.body.scrollHeight")
             imgs = self.wd.find_elements_by_class_name('serp-item__link')
-            if (last_len == len(imgs)):
-                break;
-            if (self.limit != 0):
-                if (len(imgs) > self.limit):
-                    break;
+            if last_len == len(imgs):
+                break
+            if self.limit != 0:
+                if len(imgs) > self.limit:
+                    break
             last_height = new_height
             last_len = len(imgs)
 
@@ -99,8 +100,8 @@ class YandexParser:
         start_url=self.wd.current_url
         seconds=0
         limit_seconds=60
-        while(True):
-            if(self.wd.current_url!=start_url or seconds>=limit_seconds):
+        while True:
+            if self.wd.current_url!=start_url or seconds>=limit_seconds:
                 break
             time.sleep(1)
             seconds += 1
