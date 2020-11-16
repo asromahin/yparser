@@ -1,4 +1,5 @@
 from api.utils import utils
+from api.utils.kill_instances import kill_chrome_instances
 import time
 from tqdm import tqdm
 import pandas as pd
@@ -161,3 +162,7 @@ class YandexParser:
         print('go to page')
         self.get_links_to_images()
         self.get_images_by_links()
+
+        # Killing Google Chrome instances created by the parser
+        kill_chrome_instances()
+
