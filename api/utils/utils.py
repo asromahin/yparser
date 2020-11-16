@@ -1,6 +1,6 @@
 from selenium import webdriver
 import requests
-from api.js_drop_file import JS_DROP_FILE
+from api.js_code import JS_DROP_FILE
 
 
 def init_wd():
