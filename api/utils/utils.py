@@ -3,6 +3,9 @@ import requests
 
 
 def init_wd():
+    """
+    Initializing Chrome Webdriver from selenium library
+    """
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
@@ -13,7 +16,12 @@ def init_wd():
 
 
 def get_image_by_url(url, savename):
-    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+    """
+    Getting image by a given url using requests library
+    """
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) '
+                      'Chrome/39.0.2171.95 Safari/537.36'}
     try:
         response = requests.get(
             url,
@@ -35,15 +43,16 @@ def get_image_by_url(url, savename):
         print(e, url)
 
 
-def get_image_by_url2(url, savename):
-    try:
-        #urllib.request.urlretrieve(url, savename)
-        #wget.download(url=url, out=savename)
-        #fastai.core.download_url(url, savename, show_progress=False)
-        pass
-    except Exception as e:
-        print(url)
-        print(e, url)
+# def get_image_by_url2(url, savename):
+#     try:
+#         urllib.request.urlretrieve(url, savename)
+#         wget.download(url=url, out=savename)
+#         fastai.core.download_url(url, savename, show_progress=False)
+#         pass
+#     except Exception as e:
+#         print(url)
+#         print(e, url)
+
 
 JS_DROP_FILE = """
     var target = arguments[0],
@@ -78,5 +87,3 @@ def drag_and_drop_file(drop_target, path):
     driver = drop_target.parent
     file_input = driver.execute_script(JS_DROP_FILE, drop_target, 0, 0)
     file_input.send_keys(path)
-
-

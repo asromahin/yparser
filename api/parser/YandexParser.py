@@ -16,8 +16,8 @@ class YandexParser:
             self.set_url(url)
 
     def set_url(self, url):
-        self.url=url
-        if self.wd.current_url!=self.url:
+        self.url = url
+        if self.wd.current_url != self.url:
             self.wd.get(self.url)
             time.sleep(1)
 
@@ -67,12 +67,12 @@ class YandexParser:
     def get_images_by_links(self):
 
         print('start grab images')
-        save_files=[]
+        save_files = []
         for i in tqdm(range(len(self.image_links))):
             save_name = f'{self.save_path}/{i}.jpg'
             utils.get_image_by_url(self.image_links[i], save_name)
             save_files.append(save_name)
-        self.pdata['save_file']=save_files
+        self.pdata['save_file'] = save_files
 
         print('end grab images')
 
@@ -87,21 +87,21 @@ class YandexParser:
         self.get_links_to_images()
         self.get_images_by_links()
 
-    def get_by_image(self,image_path=''):
+    def get_by_image(self, image_path=''):
         self.wd.get('https://yandex.ru/images/')
         print('open https://yandex.ru/images/')
         time.sleep(1)
         self.wd.find_element_by_class_name('icon_type_cbir').click()
         time.sleep(1)
         print(f'download image from {image_path}')
-        target_panel=self.wd.find_element_by_class_name('cbir-panel__file-input')
-        utils.drag_and_drop_file(target_panel,image_path)
+        target_panel = self.wd.find_element_by_class_name('cbir-panel__file-input')
+        utils.drag_and_drop_file(target_panel, image_path)
         print('wait download')
-        start_url=self.wd.current_url
-        seconds=0
-        limit_seconds=60
+        start_url = self.wd.current_url
+        seconds = 0
+        limit_seconds = 60
         while True:
-            if self.wd.current_url!=start_url or seconds>=limit_seconds:
+            if self.wd.current_url != start_url or seconds >= limit_seconds:
                 break
             time.sleep(1)
             seconds += 1
@@ -111,7 +111,7 @@ class YandexParser:
         elem = self.wd.find_element_by_class_name('similar__thumbs')
         elem = elem.find_element_by_tag_name('li')
         elem = elem.find_element_by_tag_name('a')
-        start_url=elem.get_attribute('href')
+        start_url = elem.get_attribute('href')
         print('get url:', start_url)
         self.set_url(start_url)
         print('go to page')
@@ -127,7 +127,7 @@ class YandexParser:
 
         print(f'set image url {image_url}')
         cur_elem = self.wd.find_element_by_class_name('cbir-panel__input')
-        target_panel=cur_elem.find_element_by_class_name('input__control')
+        target_panel = cur_elem.find_element_by_class_name('input__control')
         print(target_panel.get_attribute('value'))
         target_panel.click()
         target_panel.clear()
@@ -139,10 +139,10 @@ class YandexParser:
         cur_elem.find_element_by_class_name('cbir-panel__search-button').click()
         time.sleep(5)
         print('image is set')
-        start_url=self.wd.current_url
-        seconds=0
-        limit_seconds=60
-        #while(True):
+        start_url = self.wd.current_url
+        seconds = 0
+        limit_seconds = 60
+        # while(True):
         #    if(self.wd.current_url!=start_url or seconds>=limit_seconds):
         #        break
         #    time.sleep(1)
@@ -153,13 +153,9 @@ class YandexParser:
         elem = self.wd.find_element_by_class_name('cbir-similar__thumbs-inner')
         elem = elem.find_element_by_tag_name('li')
         elem = elem.find_element_by_tag_name('a')
-        start_url=elem.get_attribute('href')
+        start_url = elem.get_attribute('href')
         print('get url:', start_url)
         self.set_url(start_url)
         print('go to page')
         self.get_links_to_images()
         self.get_images_by_links()
-
-
-
-
