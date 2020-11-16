@@ -70,7 +70,7 @@ class YandexParser:
         print('start grab images')
         save_files = []
         for i in tqdm(range(len(self.image_links))):
-            save_name = f'{self.save_path}/{i}.jpg'
+            save_name = f'{self.save_path}/{i + 1}.jpg'
             utils.get_image_by_url(self.image_links[i], save_name)
             save_files.append(save_name)
         self.pdata['save_file'] = save_files
@@ -121,24 +121,24 @@ class YandexParser:
 
     def get_by_image_url(self, image_url, save_screen='screenshot.png'):
         self.wd.get(image_url)
-        print('open https://yandex.ru/images/')
+        print(f'open {image_url[:60]}... (Your image URL)')
         time.sleep(1)
-        self.wd.find_element_by_class_name('input__cbir-button').click()
-        time.sleep(1)
-
-        print(f'set image url {image_url}')
-        cur_elem = self.wd.find_element_by_class_name('cbir-panel__input')
-        target_panel = cur_elem.find_element_by_class_name('input__control')
-        print(target_panel.get_attribute('value'))
-        target_panel.click()
-        target_panel.clear()
-        target_panel.send_keys(image_url)
-        print(target_panel.get_attribute('value'))
-
+        # self.wd.find_element_by_class_name('input__cbir-button').click()
+        # time.sleep(1)
+        #
+        # print(f'set image url {image_url}')
+        # cur_elem = self.wd.find_element_by_class_name('cbir-panel__input')
+        # target_panel = cur_elem.find_element_by_class_name('input__control')
+        # print(target_panel.get_attribute('value'))
+        # target_panel.click()
+        # target_panel.clear()
+        # target_panel.send_keys(image_url)
+        # print(target_panel.get_attribute('value'))
+        #
         self.wd.get_screenshot_as_file(save_screen)
-        time.sleep(2)
-        cur_elem.find_element_by_class_name('cbir-panel__search-button').click()
-        time.sleep(5)
+        # time.sleep(2)
+        # cur_elem.find_element_by_class_name('cbir-panel__search-button').click()
+        # time.sleep(5)
         print('image is set')
         start_url = self.wd.current_url
         seconds = 0
