@@ -1,4 +1,4 @@
-from api.parser.YandexParser import YandexParser
+from YandexParser import YandexParser
 import os
 import glob
 

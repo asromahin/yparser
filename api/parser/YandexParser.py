@@ -1,4 +1,4 @@
-import api.utils.utils as utils
+from api.utils import utils
 import time
 from tqdm import tqdm
 import pandas as pd
@@ -7,6 +7,9 @@ import os
 
 class YandexParser:
     def __init__(self, save_path, limit=0, url=None):
+        """
+        Initializing YandexParser class
+        """
         self.save_path = save_path
         if not os.path.exists(self.save_path):
             os.mkdir(self.save_path)
@@ -22,7 +25,6 @@ class YandexParser:
             time.sleep(1)
 
     def get_links_to_images(self):
-
         last_height = self.wd.execute_script("return document.body.scrollHeight")
         last_len = 0
         print('scroll page with images')
@@ -65,7 +67,6 @@ class YandexParser:
         self.pdata = pd.DataFrame(self.image_links, columns=['url'])
 
     def get_images_by_links(self):
-
         print('start grab images')
         save_files = []
         for i in tqdm(range(len(self.image_links))):
@@ -118,8 +119,8 @@ class YandexParser:
         self.get_links_to_images()
         self.get_images_by_links()
 
-    def get_by_image_url(self, image_url='', save_screen='screenshot.png'):
-        self.wd.get('https://yandex.ru/images/')
+    def get_by_image_url(self, image_url, save_screen='screenshot.png'):
+        self.wd.get(image_url)
         print('open https://yandex.ru/images/')
         time.sleep(1)
         self.wd.find_element_by_class_name('input__cbir-button').click()
@@ -150,6 +151,7 @@ class YandexParser:
         #    print('while',seconds,'seconds')
         time.sleep(1)
         self.wd.save_screenshot('test.png')
+
         elem = self.wd.find_element_by_class_name('cbir-similar__thumbs-inner')
         elem = elem.find_element_by_tag_name('li')
         elem = elem.find_element_by_tag_name('a')

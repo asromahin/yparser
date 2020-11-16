@@ -1,5 +1,6 @@
+import os
+import signal
 import wmi
-import os, signal
 
 # Initializing the wmi constructor
 f = wmi.WMI()
