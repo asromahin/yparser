@@ -1,26 +1,35 @@
-import api.utils.utils as utils
+from api.utils import utils
+from api.utils.kill_instances import kill_chrome_instances
 import time
 from tqdm import tqdm
 import pandas as pd
+import os
 
-class YandexParser():
-    def __init__(self,save_path,limit=0,url=None):
-        self.save_path=save_path
-        self.wd=utils.init_wd()
-        self.limit=limit
-        if(url):
+
+class YandexParser:
+    def __init__(self, save_path, limit=0, url=None):
+        """
+        Initializing YandexParser class
+        """
+        self.save_path = save_path
+        if not os.path.exists(self.save_path):
+            os.mkdir(self.save_path)
+        self.wd = utils.init_wd()
+        self.limit = limit
+        if url:
             self.set_url(url)
-    def set_url(self,url):
-        self.url=url
-        if(self.wd.current_url!=self.url):
+
+    def set_url(self, url):
+        self.url = url
+        if self.wd.current_url != self.url:
             self.wd.get(self.url)
             time.sleep(1)
-    def get_links_to_images(self):
 
+    def get_links_to_images(self):
         last_height = self.wd.execute_script("return document.body.scrollHeight")
         last_len = 0
         print('scroll page with images')
-        while (True):
+        while True:
             imgs = self.wd.find_elements_by_class_name('serp-item__thumb')
             print(len(imgs))
             b = self.wd.find_element_by_class_name('more_direction_next')
@@ -31,11 +40,11 @@ class YandexParser():
             time.sleep(1)
             new_height = self.wd.execute_script("return document.body.scrollHeight")
             imgs = self.wd.find_elements_by_class_name('serp-item__link')
-            if (last_len == len(imgs)):
-                break;
-            if (self.limit != 0):
-                if (len(imgs) > self.limit):
-                    break;
+            if last_len == len(imgs):
+                break
+            if self.limit != 0:
+                if len(imgs) > self.limit:
+                    break
             last_height = new_height
             last_len = len(imgs)
 
@@ -47,26 +56,25 @@ class YandexParser():
             # print(url)
             d = url.split('&')
             for i in range(len(d)):
-                if ('img_url' in d[i]):
+                if 'img_url' in d[i]:
                     d2 = d[i].split('=')[1]
                     url = d2.split('%3A')
                     url = ':'.join(url)
                     url = url.split('%2F')
                     url = '/'.join(url)
                     self.image_links.append(url)
-                    break;
+                    break
         print('end parse links for images')
         self.pdata = pd.DataFrame(self.image_links, columns=['url'])
 
     def get_images_by_links(self):
-
         print('start grab images')
-        save_files=[]
+        save_files = []
         for i in tqdm(range(len(self.image_links))):
-            save_name = f'{self.save_path}/{i}.jpg'
+            save_name = f'{self.save_path}/{i + 1}.jpg'
             utils.get_image_by_url(self.image_links[i], save_name)
             save_files.append(save_name)
-        self.pdata['save_file']=save_files
+        self.pdata['save_file'] = save_files
 
         print('end grab images')
 
@@ -81,62 +89,62 @@ class YandexParser():
         self.get_links_to_images()
         self.get_images_by_links()
 
-    def get_by_image(self,image_path=''):
+    def get_by_image(self, image_path=''):
         self.wd.get('https://yandex.ru/images/')
         print('open https://yandex.ru/images/')
         time.sleep(1)
         self.wd.find_element_by_class_name('icon_type_cbir').click()
         time.sleep(1)
         print(f'download image from {image_path}')
-        target_panel=self.wd.find_element_by_class_name('cbir-panel__file-input')
-        utils.drag_and_drop_file(target_panel,image_path)
+        target_panel = self.wd.find_element_by_class_name('cbir-panel__file-input')
+        utils.drag_and_drop_file(target_panel, image_path)
         print('wait download')
-        start_url=self.wd.current_url
-        seconds=0
-        limit_seconds=60
-        while(True):
-            if(self.wd.current_url!=start_url or seconds>=limit_seconds):
+        start_url = self.wd.current_url
+        seconds = 0
+        limit_seconds = 60
+        while True:
+            if self.wd.current_url != start_url or seconds >= limit_seconds:
                 break
             time.sleep(1)
-            seconds+=1
-            print('while',seconds,'seconds')
+            seconds += 1
+            print('while', seconds, 'seconds')
         time.sleep(1)
 
         elem = self.wd.find_element_by_class_name('similar__thumbs')
         elem = elem.find_element_by_tag_name('li')
         elem = elem.find_element_by_tag_name('a')
-        start_url=elem.get_attribute('href')
+        start_url = elem.get_attribute('href')
         print('get url:', start_url)
         self.set_url(start_url)
         print('go to page')
         self.get_links_to_images()
         self.get_images_by_links()
 
-    def get_by_image_url(self,image_url='',save_screen='screenshot.png'):
-        self.wd.get('https://yandex.ru/images/')
-        print('open https://yandex.ru/images/')
+    def get_by_image_url(self, image_url, save_screen='screenshot.png'):
+        self.wd.get(image_url)
+        print(f'open {image_url[:60]}... (Your image URL)')
         time.sleep(1)
-        self.wd.find_element_by_class_name('input__cbir-button').click()
-        time.sleep(1)
-
-        print(f'set image url {image_url}')
-        cur_elem = self.wd.find_element_by_class_name('cbir-panel__input')
-        target_panel=cur_elem.find_element_by_class_name('input__control')
-        print(target_panel.get_attribute('value'))
-        target_panel.click()
-        target_panel.clear()
-        target_panel.send_keys(image_url)
-        print(target_panel.get_attribute('value'))
-
+        # self.wd.find_element_by_class_name('input__cbir-button').click()
+        # time.sleep(1)
+        #
+        # print(f'set image url {image_url}')
+        # cur_elem = self.wd.find_element_by_class_name('cbir-panel__input')
+        # target_panel = cur_elem.find_element_by_class_name('input__control')
+        # print(target_panel.get_attribute('value'))
+        # target_panel.click()
+        # target_panel.clear()
+        # target_panel.send_keys(image_url)
+        # print(target_panel.get_attribute('value'))
+        #
         self.wd.get_screenshot_as_file(save_screen)
-        time.sleep(2)
-        cur_elem.find_element_by_class_name('cbir-panel__search-button').click()
-        time.sleep(5)
+        # time.sleep(2)
+        # cur_elem.find_element_by_class_name('cbir-panel__search-button').click()
+        # time.sleep(5)
         print('image is set')
-        start_url=self.wd.current_url
-        seconds=0
-        limit_seconds=60
-        #while(True):
+        start_url = self.wd.current_url
+        seconds = 0
+        limit_seconds = 60
+        # while(True):
         #    if(self.wd.current_url!=start_url or seconds>=limit_seconds):
         #        break
         #    time.sleep(1)
@@ -144,16 +152,17 @@ class YandexParser():
         #    print('while',seconds,'seconds')
         time.sleep(1)
         self.wd.save_screenshot('test.png')
+
         elem = self.wd.find_element_by_class_name('cbir-similar__thumbs-inner')
         elem = elem.find_element_by_tag_name('li')
         elem = elem.find_element_by_tag_name('a')
-        start_url=elem.get_attribute('href')
+        start_url = elem.get_attribute('href')
         print('get url:', start_url)
         self.set_url(start_url)
         print('go to page')
         self.get_links_to_images()
         self.get_images_by_links()
 
-
-
+        # Killing Google Chrome instances created by the parser
+        kill_chrome_instances()
 
