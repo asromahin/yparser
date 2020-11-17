@@ -164,5 +164,5 @@ class YandexParser:
         self.get_images_by_links()
 
         # Killing Google Chrome instances created by the parser
-        kill_chrome_instances()
+        # kill_chrome_instances()
 
