@@ -7,11 +7,12 @@ import os
 
 
 class YandexParser:
-    def __init__(self, save_path, url=None):
+    def __init__(self, save_path, url=None, kill_instances=True):
         """
         Initializing YandexParser class
         """
-        #kill_chrome_instances()
+        if kill_instances:
+            kill_chrome_instances()
         self.save_path = save_path
         if not os.path.exists(self.save_path):
             os.mkdir(self.save_path)

@@ -21,6 +21,7 @@ def kill_chrome_instances():
 
     found = 0
     killed = 0
+    kill_chromium = 0
     for process in psutil.process_iter():
         if 'chrome' in process.name():
             if process.name() == 'chromedriver.exe':
@@ -30,6 +31,7 @@ def kill_chrome_instances():
                     killed += 1
                 process.terminate()
                 killed += 1
+                kill_chromium += 1
             found += 1
 
     print(f'\n{found} processes found')
