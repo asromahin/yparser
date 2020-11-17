@@ -54,8 +54,8 @@ for i in range(10, len(image_urls)):
     image_url = image_urls[i]
     print(i, image_url)
 
-    YP = YandexParser(os.path.join('data', str(i)))
-    with open(os.path.join('data', str(i), 'url.txt'), 'w') as f:
+    YP = YandexParser(os.path.join('../data', str(i)))
+    with open(os.path.join('../data', str(i), 'url.txt'), 'w') as f:
         f.write(image_url)
         f.close()
     try:

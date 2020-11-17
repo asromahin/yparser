@@ -3,15 +3,15 @@ import requests
 from api.js_code import JS_DROP_FILE
 
 
-def init_wd():
+def init_wd(headless=True):
     """
     Initializing Chrome Webdriver from selenium library
     """
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('--headless')
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--disable-dev-shm-usage')
-
+    if headless:
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
     wd = webdriver.Chrome('chromedriver', chrome_options=chrome_options)
     return wd
 
@@ -43,16 +43,6 @@ def get_image_by_url(url, savename):
         print(url)
         print(e, url)
 
-
-# def get_image_by_url2(url, savename):
-#     try:
-#         urllib.request.urlretrieve(url, savename)
-#         wget.download(url=url, out=savename)
-#         fastai.core.download_url(url, savename, show_progress=False)
-#         pass
-#     except Exception as e:
-#         print(url)
-#         print(e, url)
 
 def drag_and_drop_file(drop_target, path):
     driver = drop_target.parent
