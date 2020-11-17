@@ -7,15 +7,15 @@ import os
 
 
 class YandexParser:
-    def __init__(self, save_path, limit=0, url=None):
+    def __init__(self, save_path, url=None):
         """
         Initializing YandexParser class
         """
+        #kill_chrome_instances()
         self.save_path = save_path
         if not os.path.exists(self.save_path):
             os.mkdir(self.save_path)
         self.wd = utils.init_wd()
-        self.limit = limit
         if url:
             self.set_url(url)
 
@@ -120,7 +120,8 @@ class YandexParser:
         self.get_links_to_images()
         self.get_images_by_links()
 
-    def get_by_image_url(self, image_url, save_screen='screenshot.png'):
+    def get_by_image_url(self, image_url, save_screen='screenshot.png', limit=10):
+        self.limit = limit
         self.wd.get(image_url)
         print(f'open {image_url[:60]}... (Your image URL)')
         time.sleep(1)
