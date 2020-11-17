@@ -7,10 +7,12 @@ import os
 
 
 class YandexParser:
-    def __init__(self, save_path, url=None):
+    def __init__(self, save_path, url=None, kill_instances=True):
         """
         Initializing YandexParser class
         """
+        if kill_instances:
+            kill_chrome_instances()
         self.save_path = save_path
         if not os.path.exists(self.save_path):
             os.mkdir(self.save_path)
@@ -162,5 +164,5 @@ class YandexParser:
         self.get_images_by_links()
 
         # Killing Google Chrome instances created by the parser
-        # kill_chrome_instances()
+        kill_chrome_instances()
 
