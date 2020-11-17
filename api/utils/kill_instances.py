@@ -2,7 +2,8 @@ import os
 import signal
 import wmi
 import psutil
-from datetime import datetime
+
+
 def kill_chrome_instances():
     """
     Killing instances of Google Chrome created by YandexParser
