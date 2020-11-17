@@ -2,14 +2,13 @@ import os
 import signal
 import wmi
 import psutil
-
-
+from datetime import datetime
 def kill_chrome_instances():
     """
     Killing instances of Google Chrome created by YandexParser
     """
     # Initializing the wmi constructor
-    f = wmi.WMI()
+    # f = wmi.WMI()
 
     # Printing the header for the later columns
     print('\nKilling Google Chrome instances...')
@@ -21,11 +20,21 @@ def kill_chrome_instances():
     #     if 'chrome' in process.Name:
     #         os.kill(process.ProcessId, signal.SIGTERM)
 
-    k = 0
+    found = 0
+    killed = 0
     for process in psutil.process_iter():
         if 'chrome' in process.name():
-            process.kill()
-            k += 1
+            name = process.cmdline()[0].split(sep="\\")[-1]
+            print(f'\nPID: {process.pid} | '
+                  f'Process name: {name} | '
+                  f'Parent\'s names: {[item.name() for item in process.parents()]}', end='\t')
+            if 'chromedriver.exe' in [item.name() for item in process.parents()] or \
+                    process.name() == 'chromedriver.exe':
+                print('- to kill', end='')
+                process.terminate()
+                killed += 1
 
-    print(f'{k} processes killed')
+            found += 1
 
+    print(f'\n{found} processes found')
+    print(f'{killed} processes killed')
