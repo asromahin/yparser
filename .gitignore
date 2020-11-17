@@ -1,4 +1,8 @@
 /.idea
 *.log
 /data
+__pycache__*
 *.png
+*.jpg
+*.tiff
+*.webp
