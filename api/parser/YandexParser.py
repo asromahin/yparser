@@ -25,11 +25,11 @@ class YandexParser:
             self.wd.get(self.url)
             time.sleep(1)
 
-    def get_links_to_images(self):
+    def get_links_to_images(self, quantity=200):
         last_height = self.wd.execute_script("return document.body.scrollHeight")
         last_len = 0
         print('scroll page with images')
-        while True:
+        while last_len < quantity:
             imgs = self.wd.find_elements_by_class_name('serp-item__thumb')
             print(len(imgs))
             b = self.wd.find_element_by_class_name('more_direction_next')
@@ -120,7 +120,7 @@ class YandexParser:
         self.get_links_to_images()
         self.get_images_by_links()
 
-    def get_by_image_url(self, image_url, save_screen='screenshot.png'):
+    def get_by_image_url(self, image_url, save_screen='screenshot.png', quantity=200):
         self.wd.get(image_url)
         print(f'open {image_url[:60]}... (Your image URL)')
         time.sleep(1)
@@ -160,9 +160,10 @@ class YandexParser:
         print('get url:', start_url)
         self.set_url(start_url)
         print('go to page')
-        self.get_links_to_images()
+        self.wd.execute_script('window.history.go(-1)')
+        self.get_links_to_images(quantity)
         self.get_images_by_links()
 
         # Killing Google Chrome instances created by the parser
-        kill_chrome_instances()
+        # kill_chrome_instances()
 
