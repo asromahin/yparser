@@ -7,7 +7,7 @@ import os
 
 
 class YandexParser:
-    def __init__(self, save_path, limit=0, url=None):
+    def __init__(self, save_path, url=None):
         """
         Initializing YandexParser class
         """
@@ -15,7 +15,6 @@ class YandexParser:
         if not os.path.exists(self.save_path):
             os.mkdir(self.save_path)
         self.wd = utils.init_wd()
-        self.limit = limit
         if url:
             self.set_url(url)
 
@@ -25,11 +24,11 @@ class YandexParser:
             self.wd.get(self.url)
             time.sleep(1)
 
-    def get_links_to_images(self, quantity=200):
+    def get_links_to_images(self, limit=200):
         last_height = self.wd.execute_script("return document.body.scrollHeight")
         last_len = 0
         print('scroll page with images')
-        while last_len < quantity:
+        while last_len < limit:
             imgs = self.wd.find_elements_by_class_name('serp-item__thumb')
             print(len(imgs))
             b = self.wd.find_element_by_class_name('more_direction_next')
@@ -42,9 +41,7 @@ class YandexParser:
             imgs = self.wd.find_elements_by_class_name('serp-item__link')
             if last_len == len(imgs):
                 break
-            if self.limit != 0:
-                if len(imgs) > self.limit:
-                    break
+
             last_height = new_height
             last_len = len(imgs)
 
@@ -120,7 +117,7 @@ class YandexParser:
         self.get_links_to_images()
         self.get_images_by_links()
 
-    def get_by_image_url(self, image_url, save_screen='screenshot.png', quantity=200):
+    def get_by_image_url(self, image_url, save_screen='screenshot.png', limit=200):
         self.wd.get(image_url)
         print(f'open {image_url[:60]}... (Your image URL)')
         time.sleep(1)
@@ -161,7 +158,7 @@ class YandexParser:
         self.set_url(start_url)
         print('go to page')
         self.wd.execute_script('window.history.go(-1)')
-        self.get_links_to_images(quantity)
+        self.get_links_to_images(limit)
         self.get_images_by_links()
 
         # Killing Google Chrome instances created by the parser
