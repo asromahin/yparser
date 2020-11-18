@@ -9,4 +9,3 @@ YP = YandexParser('data1')
 image_url = 'https://sun9-37.userapi.com/c857432/v857432140/1824ec/u1L-U5vjmQI.jpg?ava=1'
 # Storing images in the 'data' folder
 YP.get_by_image_url(image_url, limit=200, download_type=2)
-YP = YandexParser('data2')
