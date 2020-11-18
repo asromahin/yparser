@@ -1,4 +1,4 @@
-from api.src.utils.utils import get_image_by_url
+from api.src.utils.utils import get_image_by_url, get_chunks
 import os
 import asyncio
 
@@ -24,9 +24,11 @@ async def download_images_async(image_links, save_dir):
                 pass
 
 
-def download_images_sync(images_links, save_dir, shift_iter=0):
+def download_images_sync(images_links, save_dir):
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
     for i, image_link in (enumerate(images_links)):
-        save_path = os.path.join(save_dir, str(shift_iter+i) + '.jpg')
+        save_path = os.path.join(save_dir, str(i) + '.jpg')
         get_image_by_url(image_link, save_path)
 
 
@@ -41,9 +43,13 @@ class Downloader:
             loop = asyncio.get_event_loop()
             loop.run_until_complete(download_images_async(images_links, save_dir))
         elif download_type == 2:
-            chunk_size = len(images_links)//self.n_threads
-            for i in range(0, len(images_links), chunk_size):
-                x = threading.Thread(target=download_images_sync, args=(images_links[i:i+chunk_size], save_dir, i))
-                x.start()
+            if not os.path.exists(save_dir):
+                os.mkdir(save_dir)
+            chunks = get_chunks(images_links, self.n_threads)
+            for i, chunk in enumerate(chunks):
+                sub_path = os.path.join(save_dir, str(i))
+                if len(chunk) > 0:
+                    x = threading.Thread(target=download_images_sync, args=(chunk, sub_path))
+                    x.start()
 
 

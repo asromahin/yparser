@@ -1,5 +1,6 @@
 from api.parser import parse_by_images, parse_by_images_urls
 from api.src.utils.kill_instances import kill_chrome_instances
+from api.src.utils.utils import get_chunks
 import threading
 import os
 
@@ -17,14 +18,12 @@ def parse_paralel_by_images(
         kill_chrome_instances()
     if not os.path.exists(save_path):
         os.mkdir(save_path)
-    chunk_size = len(image_paths) // paralel_threads
-    if chunk_size == 0:
-        chunk_size = 1
+    chunks = get_chunks(image_paths, paralel_threads)
     threads = []
-    for i in range(0, len(image_paths), chunk_size):
-        sub_path = os.path.join(save_path, str(i//chunk_size))
+    for i, chunk in enumerate(chunks):
+        sub_path = os.path.join(save_path, str(i))
         x = threading.Thread(target=parse_by_images, args=(
-            image_paths[i:i + chunk_size],
+            chunk,
             sub_path,
             limit,
             download_type,
@@ -50,14 +49,12 @@ def parse_paralel_by_images_urls(
         kill_chrome_instances()
     if not os.path.exists(save_path):
         os.mkdir(save_path)
-    chunk_size = len(image_urls) // paralel_threads
-    if chunk_size == 0:
-        chunk_size = 1
+    chunks = get_chunks(image_urls, paralel_threads)
     threads = []
-    for i in range(0, len(image_urls), chunk_size):
-        sub_path = os.path.join(save_path, str(i//chunk_size))
+    for i, chunk in enumerate(chunks):
+        sub_path = os.path.join(save_path, str(i))
         x = threading.Thread(target=parse_by_images_urls, args=(
-            image_urls[i:i + chunk_size],
+            chunk,
             sub_path,
             limit,
             download_type,
