@@ -1,26 +1,20 @@
-from api.utils import utils
-from api.utils.kill_instances import kill_chrome_instances
+from api.src.utils import utils
+from api.src.utils.kill_instances import kill_chrome_instances
 import time
-from tqdm import tqdm
-import pandas as pd
 import os
-from api.parser.downloader import Downloader
+from api.src.downloader import Downloader
 
 
 class YandexParser:
-    def __init__(self, save_path, url=None, kill_instances=True):
+    def __init__(self, kill_instances=True, n_threads=16):
         """
         Initializing YandexParser class
         """
         if kill_instances:
             kill_chrome_instances()
-        self.save_path = save_path
-        self.downloader = Downloader()
-        if not os.path.exists(self.save_path):
-            os.mkdir(self.save_path)
+        self.downloader = Downloader(n_threads=n_threads)
         self.wd = utils.init_wd()
-        if url:
-            self.set_url(url)
+        self.url = ''
 
     def set_url(self, url):
         self.url = url
@@ -63,9 +57,11 @@ class YandexParser:
         print('end scroll page with images')
         return res_images
 
-    def get_images_by_links(self, images, download_type=0):
+    def get_images_by_links(self, images, save_path, download_type=0):
+        if not os.path.exists(save_path):
+            os.mkdir(save_path)
         print('start grab images')
-        self.downloader.download_images(images, save_dir=self.save_path, download_type=download_type)
+        self.downloader.download_images(images, save_dir=save_path, download_type=download_type)
         print('end grab images')
 
     def get_by_text(self, text):
@@ -106,7 +102,7 @@ class YandexParser:
             print('while', seconds, 'seconds')
         time.sleep(1)
 
-    def get_by_image(self, image_path='', limit=200, download_type=True):
+    def get_by_image(self, image_path, save_path, limit=200, download_type=True):
         self.to_navigation()
         print(f'download image from {image_path}')
         target_panel = self.wd.find_element_by_class_name('cbir-panel__file-input')
@@ -116,9 +112,9 @@ class YandexParser:
         self.to_image_list()
         print('go to page')
         images = self.get_links_to_images(limit)
-        self.get_images_by_links(images, download_type)
+        self.get_images_by_links(images, save_path=save_path, download_type=download_type)
 
-    def get_by_image_url(self, image_url, save_screen='screenshot.png', limit=200, download_type=True):
+    def get_by_image_url(self, image_url, save_path, save_screen='screenshot.png', limit=200, download_type=True):
         self.to_navigation()
         print(f'set image url {image_url}')
         cur_elem = self.wd.find_element_by_class_name('cbir-panel__input')
@@ -127,12 +123,12 @@ class YandexParser:
         target_panel.click()
         target_panel.clear()
         target_panel.send_keys(image_url)
-        self.wd.get_screenshot_as_file(save_screen)
+        #self.wd.get_screenshot_as_file(save_screen)
         time.sleep(2)
         cur_elem.find_element_by_class_name('cbir-panel__search-button').click()
         time.sleep(5)
-        self.wd.save_screenshot('test.png')
+        #self.wd.save_screenshot('test.png')
         self.to_image_list()
         images = self.get_links_to_images(limit)
-        self.get_images_by_links(images, download_type)
+        self.get_images_by_links(images, save_path=save_path, download_type=download_type)
 

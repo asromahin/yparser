@@ -1,9 +1,6 @@
 from selenium import webdriver
 import requests
-from api.js_code import JS_DROP_FILE
-import aiohttp
-import asyncio
-import async_timeout
+from api.src.js_code import JS_DROP_FILE
 
 
 def init_wd(headless=True):

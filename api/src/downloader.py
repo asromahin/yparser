@@ -1,4 +1,4 @@
-from api.utils.utils import get_image_by_url
+from api.src.utils.utils import get_image_by_url
 import os
 import asyncio
 
