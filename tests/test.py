@@ -1,11 +1,12 @@
 from api.parser.YandexParser import YandexParser
+import time
 
 # Initializing YandexParser
-YP = YandexParser('../data')
+start_time = time.time()
+YP = YandexParser('data1')
 
 # Insert the link where Similar Images Block is depicted
-image_url = 'https://yandex.ru/images/search?rpt=imageview&url=https%3A%2F%2Favatars.mds.yandex.net%2Fget-images-cbir%2F4328953%2FwWv_boU54e26wbJKub6Y-g%2Forig&cbir_id=4328953%2FwWv_boU54e26wbJKub6Y-g&from=tabbar'
-
+image_url = 'https://sun9-37.userapi.com/c857432/v857432140/1824ec/u1L-U5vjmQI.jpg?ava=1'
 # Storing images in the 'data' folder
-YP.get_by_image_url(image_url, limit=300)
-
+YP.get_by_image_url(image_url, limit=200, download_type=2)
+YP = YandexParser('data2')

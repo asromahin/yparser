@@ -1,6 +1,9 @@
 from selenium import webdriver
 import requests
 from api.js_code import JS_DROP_FILE
+import aiohttp
+import asyncio
+import async_timeout
 
 
 def init_wd(headless=True):
@@ -16,7 +19,18 @@ def init_wd(headless=True):
     return wd
 
 
-def get_image_by_url(url, savename):
+def save_image_by_response(response, savename, url):
+    if not response.ok:
+        print(response, url)
+    else:
+        with open(savename, 'wb') as handle:
+            for block in response.iter_content(1024):
+                if not block:
+                    break
+                handle.write(block)
+
+
+def get_image_by_url(url, savename, use_async=True):
     """
     Getting image by a given url using requests library
     """
@@ -30,15 +44,8 @@ def get_image_by_url(url, savename):
             stream=True,
             headers=headers,
         )
+        save_image_by_response(response, savename, url)
 
-        if not response.ok:
-            print(response, url)
-        else:
-            with open(savename, 'wb') as handle:
-                for block in response.iter_content(1024):
-                    if not block:
-                        break
-                    handle.write(block)
     except Exception as e:
         print(url)
         print(e, url)
