@@ -1,43 +1,32 @@
+
 from imagededup.methods import PHash
 import os
 from tqdm import tqdm
 import cv2
-from shutil import copyfile
+import glob
 
-os.mkdir('clean_data')
+save_dir = '../clean_data'
+os.mkdir(save_dir)
 
-files = os.listdir('../data')
-
-for i in tqdm(range(len(files))):
-    try:
-        im = cv2.imread('data/' + files[i], cv2.IMREAD_GRAYSCALE)
-        im.shape
-        copyfile('data/' + files[i], 'clean_data/' + files[i])
-    except:
-        pass
-
+files = glob.glob('../data/*/*/*/*.jpg', recursive=True)
 phasher = PHash()
 
-encodings = phasher.encode_images(image_dir='clean_data/')
+encodings = {}
+for i, file in tqdm(enumerate(files)):
+    im = cv2.imread(file)
+    if im is not None:
+        if len(im.shape) == 3 and im.shape[-1] == 3:
+            hash1 = phasher.encode_image(image_array=im)
+            trig = True
+            for key in encodings.keys():
+                hash2 = encodings[key]
+                dist = phasher.hamming_distance(hash1, hash2)
+                if dist < 10:
+                    trig = False
+                    break
+            if trig:
+                save_path = os.path.join(save_dir, str(i)+'.jpg')
+                encodings[save_path] = hash1
+                cv2.imwrite(save_path, im)
 
-duplicates = phasher.find_duplicates(encoding_map=encodings)
-
-data = []
-dkeys = list(duplicates.keys())
-ind_key = 0
-while True:
-    print(len(dkeys))
-    data.append(dkeys[ind_key])
-    if len(duplicates[dkeys[ind_key]]) > 0:
-        for j in range(len(duplicates[dkeys[ind_key]])):
-            try:
-                dkeys.remove(duplicates[dkeys[ind_key]][j])
-                os.remove('clean_data/' + duplicates[dkeys[ind_key]][j])
-            except:
-                pass
-    ind_key += 1
-    if ind_key >= len(dkeys) - 1:
-        break
-
-print(data)
-print(len(data))
+print(len(os.listdir(save_dir)))

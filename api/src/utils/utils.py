@@ -3,7 +3,7 @@ import requests
 from api.src.js_code import JS_DROP_FILE
 
 
-def init_wd(headless=True):
+def init_wd(path='chromedriver', headless=True):
     """
     Initializing Chrome Webdriver from selenium library
     """
@@ -12,7 +12,7 @@ def init_wd(headless=True):
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
-    wd = webdriver.Chrome('chromedriver', chrome_options=chrome_options)
+    wd = webdriver.Chrome(path, chrome_options=chrome_options)
     return wd
 
 

@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 import os
 
-files = os.listdir('../data')
+files = os.listdir('../stash_data/handwriten/data')
 minshape = (500, 500)
 maxshape = (0, 0)
 counter = 0

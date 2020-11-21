@@ -9,8 +9,9 @@ def parse_by_images(
         download_type: int = 2,
         n_threads: int = 16,
         kill_instances: bool = True,
+        chromedriver_path: str = 'chromedriver',
 ):
-    yp = YandexParser(kill_instances=kill_instances, n_threads=n_threads)
+    yp = YandexParser(chromedriver_path=chromedriver_path, kill_instances=kill_instances, n_threads=n_threads)
     if not os.path.exists(save_path):
         os.mkdir(save_path)
     for i, image_path in enumerate(image_paths):
@@ -25,8 +26,9 @@ def parse_by_images_urls(
         download_type: int = 2,
         n_threads: int = 16,
         kill_instances: bool = True,
+        chromedriver_path: str = 'chromedriver',
 ):
-    yp = YandexParser(kill_instances=kill_instances, n_threads=n_threads)
+    yp = YandexParser(chromedriver_path=chromedriver_path, kill_instances=kill_instances, n_threads=n_threads)
     if not os.path.exists(save_path):
         os.mkdir(save_path)
     for i, image_url in enumerate(image_urls):

@@ -5,15 +5,24 @@ import os
 from api.src.downloader import Downloader
 
 
+def skip_error(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except:
+            return None
+    return wrapper
+
+
 class YandexParser:
-    def __init__(self, kill_instances=True, n_threads=16, use_log=True):
+    def __init__(self, chromedriver_path='chromedriver', kill_instances=True, n_threads=16, use_log=True):
         """
         Initializing YandexParser class
         """
         if kill_instances:
             kill_chrome_instances()
         self.downloader = Downloader(n_threads=n_threads)
-        self.wd = utils.init_wd()
+        self.wd = utils.init_wd(path=chromedriver_path)
         self.url = ''
         self.use_log = use_log
 
@@ -109,6 +118,7 @@ class YandexParser:
             self.log('while', seconds, 'seconds')
         time.sleep(1)
 
+    @skip_error
     def get_by_image(self, image_path, save_path, limit=200, download_type=True):
         self.to_navigation()
         self.log(f'download image from {image_path}')
@@ -121,6 +131,7 @@ class YandexParser:
         images = self.get_links_to_images(limit)
         self.get_images_by_links(images, save_path=save_path, download_type=download_type)
 
+    @skip_error
     def get_by_image_url(self, image_url, save_path, save_screen='screenshot.png', limit=200, download_type=True):
         self.to_navigation()
         self.log(f'set image url {image_url}')

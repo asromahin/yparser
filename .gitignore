@@ -1,8 +1,11 @@
 /.idea
 *.log
-/data
 *__pycache__*
 *.png
 *.jpg
 *.tiff
 *.webp
+
+/data
+/clean_data
+/stash_data
