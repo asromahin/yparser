@@ -13,7 +13,7 @@ def init_wd(headless=True):
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
-    wd = webdriver.Chrome(CHROMEDRIVER_PATH, chrome_options=chrome_options)
+    wd = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, chrome_options=chrome_options)
     return wd
 
 
