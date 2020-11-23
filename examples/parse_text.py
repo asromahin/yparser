@@ -1,6 +1,4 @@
-from api.paralel_parser import parse_paralel_by_images_urls, parse_paralel_by_images
-from api.parser import parse_by_images
-import time
+from yparser.api.parser import parse_by_images
 import sys
 sys.path.insert(0, '../')
 
@@ -16,6 +14,6 @@ parse_by_images(
     image_paths=image_paths,
     save_path='data',
     n_threads=32,
-    chromedriver_path='../chromedriver.exe'
+    chromedriver_path='../yparser/chromedriver/chromedriver.exe'
 )
 

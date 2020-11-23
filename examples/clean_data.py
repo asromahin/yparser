@@ -1,3 +1,3 @@
-from api.src.clean import clean_data
+from yparser.api.src import clean_data
 
 clean_data(method='phash')

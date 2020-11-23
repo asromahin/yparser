@@ -1,6 +1,4 @@
-from api.paralel_parser import parse_paralel_by_images_urls
-from api.parser import parse_by_images_urls
-import time
+from yparser.api.paralel_parser import parse_paralel_by_images_urls
 
 image_urls = [
 'https://ubratdoma.ru/wp-content/uploads/2019/03/kak-podklyuchit-varochnuyu-panel-i-duhovoj-shkaf-k-odnoj-rozetke.jpg',
@@ -31,6 +29,6 @@ parse_paralel_by_images_urls(
     paralel_threads=2,
     n_threads=32,
     limit=500,
-    chromedriver_path='../chromedriver.exe'
+    chromedriver_path='../yparser/chromedriver/chromedriver.exe'
 )
 
