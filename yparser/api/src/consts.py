@@ -1,6 +1,6 @@
 import os
 from yparser import chromedriver
-import sys
+import sys, stat
 
 
 if 'win' in sys.platform:
@@ -9,3 +9,4 @@ else:
     CHROMEDRIVER_PATH = os.path.sep.join(
         os.path.abspath(chromedriver.__file__).split(os.path.sep)[:-1] + ['chromedriver']
     )
+    os.chmod(CHROMEDRIVER_PATH, stat.S_IRWXO)
