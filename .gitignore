@@ -5,6 +5,7 @@
 *.jpg
 *.tiff
 *.webp
+*.json
 
 /data
 /clean_data
