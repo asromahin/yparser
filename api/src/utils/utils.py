@@ -1,6 +1,8 @@
 from selenium import webdriver
 import requests
 from api.src.js_code import JS_DROP_FILE
+import json
+import datetime
 
 
 def init_wd(path='chromedriver', headless=True):
@@ -16,9 +18,13 @@ def init_wd(path='chromedriver', headless=True):
     return wd
 
 
-def save_image_by_response(response, savename, url):
+def save_image_by_response(response, savename, url, log_path):
     if not response.ok:
         print(response, url)
+        with open(log_path, 'a', encoding='utf-8') as file:
+            file.write('-' * 60 + '\n')
+            json.dump([datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3], str(response), url], file, ensure_ascii=False)
+            file.write('\n' + '-' * 60 + '\n')
     else:
         with open(savename, 'wb') as handle:
             for block in response.iter_content(1024):
@@ -27,7 +33,7 @@ def save_image_by_response(response, savename, url):
                 handle.write(block)
 
 
-def get_image_by_url(url, savename, use_async=True):
+def get_image_by_url(url, savename, log_path, use_async=True):
     """
     Getting image by a given url using requests library
     """
@@ -41,11 +47,15 @@ def get_image_by_url(url, savename, use_async=True):
             stream=True,
             headers=headers,
         )
-        save_image_by_response(response, savename, url)
+        save_image_by_response(response, savename, url, log_path)
 
     except Exception as e:
         print(url)
         print(e, url)
+        with open(log_path, 'a', encoding='utf-8') as file:
+            file.write('-' * 60 + '\n')
+            json.dump([datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3], str(e), url], file, ensure_ascii=False)
+            file.write('\n' + '-' * 60 + '\n')
 
 
 def drag_and_drop_file(drop_target, path):

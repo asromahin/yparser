@@ -22,6 +22,7 @@ def parse_by_images(
 def parse_by_images_urls(
         image_urls: list,
         save_path: str,
+        log_path: str,
         limit: int = 200,
         download_type: int = 2,
         n_threads: int = 16,
@@ -33,5 +34,5 @@ def parse_by_images_urls(
         os.mkdir(save_path)
     for i, image_url in enumerate(image_urls):
         sub_path = os.path.join(save_path, str(i))
-        yp.get_by_image_url(image_url, limit=limit, download_type=download_type, save_path=sub_path)
+        yp.get_by_image_url(image_url, limit=limit, download_type=download_type, save_path=sub_path, log_path=log_path)
 

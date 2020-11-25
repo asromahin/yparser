@@ -46,6 +46,7 @@ def parse_paralel_by_images_urls(
         n_threads: int = 16,
         kill_instances: bool = True,
         paralel_threads=2,
+        log_paths = ['debug1.json', 'debug2.json'],
         chromedriver_path: str = 'chromedriver',
 ):
     if kill_instances:
@@ -59,6 +60,7 @@ def parse_paralel_by_images_urls(
         x = threading.Thread(target=parse_by_images_urls, args=(
             chunk,
             sub_path,
+            log_paths[i],
             limit,
             download_type,
             n_threads,
