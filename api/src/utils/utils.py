@@ -3,6 +3,22 @@ import requests
 from api.src.js_code import JS_DROP_FILE
 import json
 import datetime
+import os
+
+
+def log(log_path, *data):
+    if log_path is None:
+        # print('-' * 60)
+        print(*data, datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3])
+        # print('-' * 60)
+    else:
+        with open(log_path, 'a', encoding='utf-8') as file:
+            # file.write('-' * 60 + '\n')
+            json.dump([datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3], *data], file, ensure_ascii=False)
+            file.write('\n' + '-' * 60 + '\n')
+    # print('-' * 60)
+    # print(*data, datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3])
+    # print('-' * 60)
 
 
 def init_wd(path='chromedriver', headless=True):
@@ -20,11 +36,7 @@ def init_wd(path='chromedriver', headless=True):
 
 def save_image_by_response(response, savename, url, log_path):
     if not response.ok:
-        print(response, url)
-        with open(log_path, 'a', encoding='utf-8') as file:
-            file.write('-' * 60 + '\n')
-            json.dump([datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3], str(response), url], file, ensure_ascii=False)
-            file.write('\n' + '-' * 60 + '\n')
+        log(log_path, str(response), url)
     else:
         with open(savename, 'wb') as handle:
             for block in response.iter_content(1024):
@@ -50,12 +62,7 @@ def get_image_by_url(url, savename, log_path, use_async=True):
         save_image_by_response(response, savename, url, log_path)
 
     except Exception as e:
-        print(url)
-        print(e, url)
-        with open(log_path, 'a', encoding='utf-8') as file:
-            file.write('-' * 60 + '\n')
-            json.dump([datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3], str(e), url], file, ensure_ascii=False)
-            file.write('\n' + '-' * 60 + '\n')
+        log(log_path, str(e), url)
 
 
 def drag_and_drop_file(drop_target, path):
@@ -73,3 +80,14 @@ def get_chunks(data, count):
         chunks[it].append(data[i])
         it += 1
     return chunks
+
+
+def remove_jsons():
+    print('\nRemoving jsons left...\n')
+    k = 0
+    for item in os.listdir('../tests'):
+        if '.json' in item:
+            os.remove(f'../tests/{item}')
+            k += 1
+    print(f'{k} jsons removed.\n')
+

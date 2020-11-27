@@ -7,15 +7,6 @@ import json
 from api.src.downloader import Downloader
 
 
-def skip_error(func):
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except:
-            return None
-    return wrapper
-
-
 class YandexParser:
     def __init__(self, chromedriver_path='chromedriver', kill_instances=True, n_threads=16, use_log=True):
         """
@@ -33,16 +24,10 @@ class YandexParser:
         if self.wd.current_url != self.url:
             self.wd.get(self.url)
             time.sleep(1)
-            
+
     def log(self, log_path, *data):
         if self.use_log:
-            with open(log_path, 'a', encoding='utf-8') as file:
-                file.write('-' * 60 + '\n')
-                json.dump([datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3], *data], file, ensure_ascii=False)
-                file.write('\n' + '-' * 60 + '\n')
-            print('-' * 60)
-            print(*data, datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3])
-            print('-' * 60)
+            utils.log(log_path, *data)
 
     def get_image_link(self, elem, log_path):
         url = elem.get_attribute('href')
@@ -68,7 +53,7 @@ class YandexParser:
             imgs = self.wd.find_elements_by_class_name('serp-item__link')
             if last_len == len(imgs):
                 try:
-                    elem = self.wd.find_element_by_class_name('button2_size_l')#[-1].click()
+                    elem = self.wd.find_element_by_class_name('button2_size_l')  # [-1].click()
                     for im in imgs:
                         res_images.append(self.get_image_link(im, log_path))
                     self.set_url(elem.get_attribute('href'))
@@ -138,21 +123,26 @@ class YandexParser:
         self.get_images_by_links(images, save_path=save_path, download_type=download_type, log_path=log_path)
 
     # @skip_error
-    def get_by_image_url(self, image_url, save_path, log_path, save_screen='screenshot.png', limit=200, download_type=True):
-        self.to_navigation(log_path)
-        self.log(log_path, f'set image url {image_url}')
-        cur_elem = self.wd.find_element_by_class_name('cbir-panel__input')
-        target_panel = cur_elem.find_element_by_class_name('input__control')
-        self.log(log_path, target_panel.get_attribute('value'))
-        target_panel.click()
-        target_panel.clear()
-        target_panel.send_keys(image_url)
-        #self.wd.get_screenshot_as_file(save_screen)
-        time.sleep(2)
-        cur_elem.find_element_by_class_name('cbir-panel__search-button').click()
-        time.sleep(5)
-        #self.wd.save_screenshot('test.png')
-        self.to_image_list(log_path)
-        images = self.get_links_to_images(log_path, limit)
-        self.get_images_by_links(images, save_path=save_path, download_type=download_type, log_path=log_path)
+    def get_by_image_url(self, image_url, save_path, log_path, save_screen='screenshot.png', limit=200,
+                         download_type=True):
+        try:
+            self.to_navigation(log_path)
+            self.log(log_path, f'set image url {image_url}')
+            cur_elem = self.wd.find_element_by_class_name('cbir-panel__input')
+            target_panel = cur_elem.find_element_by_class_name('input__control')
+            self.log(log_path, target_panel.get_attribute('value'))
+            target_panel.click()
+            target_panel.clear()
+            target_panel.send_keys(image_url)
+            # self.wd.get_screenshot_as_file(save_screen)
+            time.sleep(2)
+            cur_elem.find_element_by_class_name('cbir-panel__search-button').click()
+            time.sleep(5)
+            # self.wd.save_screenshot('test.png')
+            self.to_image_list(log_path)
+            images = self.get_links_to_images(log_path, limit)
+            self.get_images_by_links(images, save_path=save_path, download_type=download_type, log_path=log_path)
+        except Exception as e:
+            self.log(log_path, str(e))
+
 
