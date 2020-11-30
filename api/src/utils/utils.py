@@ -4,6 +4,27 @@ from api.src.js_code import JS_DROP_FILE
 import json
 import datetime
 import os
+import pandas as pd
+
+
+def multi_replace_empty(string, symbol_list):
+    for symbol in symbol_list:
+        string = string.replace(symbol, '')
+    return string
+
+
+def record_json(json_dict, log_path, *data):
+    symbol_list = ['{', '}', '"', "'", '\n']
+    if len([*data]) == 1:
+        json_dict[datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3]] = multi_replace_empty(str(*data), symbol_list)
+    else:
+        data_list = multi_replace_empty(str([*data][0]), symbol_list)
+        for i, item in enumerate([*data][1:]):
+            # data_list.append(multi_replace_empty(str(item), symbol_list))
+            data_list += multi_replace_empty((' ||| ' + str(item)), symbol_list)
+        json_dict[datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3]] = data_list
+    with open(log_path, 'w', encoding='utf-8') as file:
+        json.dump(json_dict, file, ensure_ascii=False, indent=1)
 
 
 def log(log_path, *data):
@@ -12,13 +33,31 @@ def log(log_path, *data):
         print(*data, datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3])
         # print('-' * 60)
     else:
-        with open(log_path, 'a', encoding='utf-8') as file:
-            # file.write('-' * 60 + '\n')
-            json.dump([datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3], *data], file, ensure_ascii=False)
-            file.write('\n' + '-' * 60 + '\n')
+        if log_path not in [i for i in os.listdir('../tests')]:
+            json_dict = {}
+            record_json(json_dict, log_path, *data)
+        else:
+            with open(log_path, 'r', encoding='utf-8') as file:
+                json_dict = json.load(file)
+            record_json(json_dict, log_path, *data)
     # print('-' * 60)
-    # print(*data, datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3])
+    # print(datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3], [*data], sep=' ||| ')
     # print('-' * 60)
+
+
+def compile_to_csv(log_paths: list,
+                   file_name='test_log.csv'):
+    data_list = []
+    for json_file in log_paths:
+        with open(json_file, 'r') as file:
+            data = json.load(file)
+        keys = list(data.keys())
+        val = list(data.values())
+        k_pd, v_pd = pd.Series(keys, name='Timestamp'), pd.Series(val, name='Response')
+        data_list.append(k_pd)
+        data_list.append(v_pd)
+    db = pd.DataFrame(data_list).transpose()
+    db.to_csv(file_name, encoding='windows-1251')
 
 
 def init_wd(path='chromedriver', headless=True):
@@ -82,12 +121,17 @@ def get_chunks(data, count):
     return chunks
 
 
-def remove_jsons():
+def remove_jsons_and_csv():
     print('\nRemoving jsons left...\n')
-    k = 0
+    jsons, csvs = 0, 0
     for item in os.listdir('../tests'):
         if '.json' in item:
             os.remove(f'../tests/{item}')
-            k += 1
-    print(f'{k} jsons removed.\n')
-
+            jsons += 1
+        if '.csv' in item:
+            os.remove(f'../tests/{item}')
+            csvs += 1
+    if jsons != 0:
+        print(f'{jsons} jsons removed.\n')
+    if csvs != 0:
+        print(f'{csvs} CSVs removed.\n')

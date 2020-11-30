@@ -1,6 +1,6 @@
 from api.parser import parse_by_images, parse_by_images_urls
 from api.src.utils.kill_instances import kill_chrome_instances
-from api.src.utils.utils import get_chunks, remove_jsons, log
+from api.src.utils.utils import get_chunks, remove_jsons_and_csv, log, compile_to_csv
 import threading
 import os
 
@@ -59,7 +59,7 @@ def parse_paralel_by_images_urls(
     if kill_instances:
         kill_chrome_instances()
     if remove_jsons_opt:
-        remove_jsons()
+        remove_jsons_and_csv()
     if not os.path.exists(save_path):
         os.mkdir(save_path)
     chunks = get_chunks(image_urls, paralel_threads)
@@ -82,3 +82,4 @@ def parse_paralel_by_images_urls(
         threads.append(x)
     for thread in threads:
         thread.join()
+    compile_to_csv(log_paths)

@@ -7,6 +7,15 @@ import json
 from api.src.downloader import Downloader
 
 
+def skip_error(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except:
+            return None
+    return wrapper
+
+
 class YandexParser:
     def __init__(self, chromedriver_path='chromedriver', kill_instances=True, n_threads=16, use_log=True):
         """
