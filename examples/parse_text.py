@@ -16,6 +16,6 @@ parse_by_images(
     image_paths=image_paths,
     save_path='data',
     n_threads=32,
-    chromedriver_path='../chromedriver.exe'
+    chromedriver_path='../tests/chromedriver.exe'
 )
 

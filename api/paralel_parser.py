@@ -1,8 +1,10 @@
+import os
+import threading
+import time
+
 from api.parser import parse_by_images, parse_by_images_urls
 from api.src.utils.kill_instances import kill_chrome_instances
 from api.src.utils.utils import get_chunks
-import threading
-import os
 
 
 def parse_paralel_by_images(
@@ -69,3 +71,11 @@ def parse_paralel_by_images_urls(
         threads.append(x)
     for thread in threads:
         thread.join()
+    time.sleep(2)
+
+    from api.src.utils.utils import log_path
+    for i, record in enumerate(log_path):
+        print(f'Record {i + 1}')
+        for row in record:
+            print(row)
+        print('')

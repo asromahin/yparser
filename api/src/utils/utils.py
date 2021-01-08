@@ -18,7 +18,8 @@ def init_wd(path='chromedriver', headless=True):
 
 def save_image_by_response(response, savename, url):
     if not response.ok:
-        print(response, url)
+        # print(response, url)
+        pass
     else:
         with open(savename, 'wb') as handle:
             for block in response.iter_content(1024):
@@ -44,8 +45,8 @@ def get_image_by_url(url, savename, use_async=True):
         save_image_by_response(response, savename, url)
 
     except Exception as e:
-        print(url)
-        print(e, url)
+        # print(e, url)
+        return [e, url]
 
 
 def drag_and_drop_file(drop_target, path):
@@ -63,3 +64,17 @@ def get_chunks(data, count):
         chunks[it].append(data[i])
         it += 1
     return chunks
+
+
+class Logger(list):
+    def __init__(self):
+        super().__init__()
+        self.log_path = []
+
+    def log(self, *args):
+        self.log_path.append(args)
+
+    def __getitem__(self, item):
+        return self.log_path.__getitem__(item)
+
+log_path = []

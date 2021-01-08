@@ -25,6 +25,7 @@ class YandexParser:
         self.wd = utils.init_wd(path=chromedriver_path)
         self.url = ''
         self.use_log = use_log
+        self.logger = []
 
     def set_url(self, url):
         self.url = url
@@ -34,9 +35,13 @@ class YandexParser:
             
     def log(self, *data):
         if self.use_log:
-            print('-' * 60)
-            print(*data)
-            print('-' * 60)
+            # print('-' * 60)
+            # print(*data)
+            # print('-' * 60)
+            self.logger.append([*data])
+
+    def load_log_data(self):
+        return self.logger
 
     def get_image_link(self, elem):
         url = elem.get_attribute('href')
@@ -55,13 +60,13 @@ class YandexParser:
         last_len = 0
         self.log('scroll page with images')
         res_images = []
-        while len(res_images) < limit:
+        while len(res_images) <= limit:
             imgs = self.wd.find_elements_by_class_name('serp-item__thumb')
-            self.log(len(res_images))
             time.sleep(1)
             imgs = self.wd.find_elements_by_class_name('serp-item__link')
             if last_len == len(imgs):
                 try:
+                    self.log(len(res_images))
                     elem = self.wd.find_element_by_class_name('button2_size_l')#[-1].click()
                     for im in imgs:
                         res_images.append(self.get_image_link(im))
@@ -118,7 +123,7 @@ class YandexParser:
             self.log('while', seconds, 'seconds')
         time.sleep(1)
 
-    @skip_error
+    # @skip_error
     def get_by_image(self, image_path, save_path, limit=200, download_type=True):
         self.to_navigation()
         self.log(f'download image from {image_path}')
@@ -131,7 +136,7 @@ class YandexParser:
         images = self.get_links_to_images(limit)
         self.get_images_by_links(images, save_path=save_path, download_type=download_type)
 
-    @skip_error
+    # @skip_error
     def get_by_image_url(self, image_url, save_path, save_screen='screenshot.png', limit=200, download_type=True):
         self.to_navigation()
         self.log(f'set image url {image_url}')

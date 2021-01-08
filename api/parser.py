@@ -1,6 +1,6 @@
 from api.src.yandex_parser import YandexParser
 import os
-
+from api.src.utils.utils import log_path
 
 def parse_by_images(
         image_paths: list,
@@ -34,4 +34,5 @@ def parse_by_images_urls(
     for i, image_url in enumerate(image_urls):
         sub_path = os.path.join(save_path, str(i))
         yp.get_by_image_url(image_url, limit=limit, download_type=download_type, save_path=sub_path)
-
+    data = yp.load_log_data()
+    log_path.append(data)
