@@ -1,5 +1,5 @@
 from selenium import webdriver
-import requests
+import queue
 from api.src.js_code import JS_DROP_FILE
 
 
@@ -44,4 +44,5 @@ class Logger(list):
     def __getitem__(self, item):
         return self.log_path.__getitem__(item)
 
-log_path = []
+
+log_path = queue.Queue()

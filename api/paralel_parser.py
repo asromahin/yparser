@@ -40,8 +40,9 @@ def parse_paralel_by_images(
         thread.join()
 
 
-def print_log_to_console(log_path):
-    for i, record in enumerate(log_path):
+def print_log_to_console(log_path, num_threads):
+    for i in range(num_threads):
+        record = log_path.get()
         print('*' * 60)
         print(f'Record {i + 1}')
         print('*' * 60)
@@ -58,9 +59,10 @@ def print_log_to_console(log_path):
         print('')
 
 
-def write_log_to_txt(log_path, filename):
+def write_log_to_txt(log_path, filename, num_threads):
     with open(f'{filename}.txt', 'w') as file:
-        for i, record in enumerate(log_path):
+        for i in range(num_threads):
+            record = log_path.get()
             file.write('*' * 60 + '\n')
             file.write(f'Record {i + 1}' + '\n')
             file.write('*' * 60 + '\n')
@@ -114,7 +116,9 @@ def parse_paralel_by_images_urls(
     from api.src.utils.utils import log_path
     if write_logger_to_txt:
         print('Writing log data to txt...')
-        write_log_to_txt(log_path, 'log')
+        write_log_to_txt(log_path, 'log', num_threads=paralel_threads)
         print('Written to txt')
     else:
-        print_log_to_console(log_path)
+        print_log_to_console(log_path, num_threads=paralel_threads)
+    if log_path.empty():
+        print('\nLog path emptied')

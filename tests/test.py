@@ -54,5 +54,5 @@ if __name__ == '__main__':
         save_path='data',
         paralel_threads=4,
         n_threads=32,
-        write_logger_to_txt=True
+        # write_logger_to_txt=True
     )
