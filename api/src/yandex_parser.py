@@ -100,7 +100,7 @@ class YandexParser:
 
     def to_navigation(self):
         self.wd.get('https://yandex.ru/images/')
-        self.log('open https://yandex.ru/images/')
+        self.log('Opening https://yandex.ru/images/')
         time.sleep(1)
         self.wd.find_element_by_class_name('input__cbir-button').click()
         time.sleep(1)
