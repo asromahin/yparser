@@ -83,6 +83,8 @@ class YandexParser:
             os.mkdir(save_path)
         self.log('start grab images')
         self.downloader.download_images(images, save_dir=save_path, download_type=download_type)
+        log_data = self.downloader.load_log_data()
+        self.log(log_data)
         self.log('end grab images')
 
     def get_by_text(self, text):
@@ -104,13 +106,16 @@ class YandexParser:
         time.sleep(1)
 
     def to_image_list(self):
-        self.wd.save_screenshot('supertest.png')
-        elem = self.wd.find_element_by_class_name('cbir-similar__thumbs-inner')
-        elem = elem.find_element_by_tag_name('li')
-        elem = elem.find_element_by_tag_name('a')
-        start_url = elem.get_attribute('href')
-        self.log('get url:', start_url)
-        self.set_url(start_url)
+        try:
+            self.wd.save_screenshot('supertest.png')
+            elem = self.wd.find_element_by_class_name('cbir-similar__thumbs-inner')
+            elem = elem.find_element_by_tag_name('li')
+            elem = elem.find_element_by_tag_name('a')
+            start_url = elem.get_attribute('href')
+            self.log('get url:', start_url)
+            self.set_url(start_url)
+        except Exception as e:
+            self.log('Failed to initiate "to_image_list" method')
 
     def wait_load_page(self, limit_seconds=60):
         start_url = self.wd.current_url
@@ -154,4 +159,5 @@ class YandexParser:
         self.to_image_list()
         images = self.get_links_to_images(limit)
         self.get_images_by_links(images, save_path=save_path, download_type=download_type)
+        self.log('-'*60)
 

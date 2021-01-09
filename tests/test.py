@@ -5,8 +5,8 @@ import time
 image_urls = [
     'https://kupi-plitu.ru/upload/iblock/b72/b7299f247cb043ad89e6462cfc571c73.jpg',
     'https://asko-russia.ru/upload/medialibrary/5b6/oven_15.jpg',
-    # 'https://asko-russia.ru/upload/medialibrary/3a8/oven_18.jpg',
-    # 'https://gastehmarket.ru/upload/iblock/365/0_b5b5e_706f8070_orig.jpg',
+    'https://asko-russia.ru/upload/medialibrary/3a8/oven_18.jpg',
+    'https://gastehmarket.ru/upload/iblock/365/0_b5b5e_706f8070_orig.jpg',
     # 'https://sovet-ingenera.com/wp-content/uploads/2019/08/elektroplita_v_kvartire.jpeg',
     # 'https://legko.com/disk/2/blogHQ/61/61d0d3b1f3b166b4310949ec9ff794ba.jpg',
     # 'https://static-ru.insales.ru/images/products/1/1124/38880356/ILVE_600MT-MP_I-2.jpg',
@@ -51,7 +51,7 @@ image_urls = [
 parse_paralel_by_images_urls(
     image_urls=image_urls,
     save_path='data',
-    paralel_threads=2,
+    paralel_threads=4,
     n_threads=32,
+    write_logger_to_txt=True
 )
-

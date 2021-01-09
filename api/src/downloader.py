@@ -1,10 +1,11 @@
-from api.src.utils.utils import get_image_by_url, get_chunks
+from api.src.utils.utils import get_chunks
 import os
 import asyncio
 
 import aiohttp
 import aiofiles
 import threading
+import requests
 
 
 async def fetch(session, image_link, save_path):
@@ -27,13 +28,48 @@ async def download_images_async(image_links, save_dir):
 class Downloader:
     def __init__(self, n_threads=16):
         self.n_threads = n_threads
+        self.logger = []
+
+    def log(self, *args):
+        self.logger.append([*args])
+
+    def save_image_by_response(self, response, savename, url):
+        if not response.ok:
+            # print(response, url)
+            self.log(response, url)
+        else:
+            with open(savename, 'wb') as handle:
+                for block in response.iter_content(1024):
+                    if not block:
+                        break
+                    handle.write(block)
+
+    def get_image_by_url(self, url, savename, use_async=True):
+        """
+        Getting image by a given url using requests library
+        """
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/39.0.2171.95 Safari/537.36'}
+        try:
+            response = requests.get(
+                url,
+                timeout=5,
+                stream=True,
+                headers=headers,
+            )
+            self.save_image_by_response(response, savename, url)
+
+        except Exception as e:
+            # print(e, url)
+            self.log(e, url)
 
     def download_images_sync(self, images_links, save_dir):
         if not os.path.exists(save_dir):
             os.mkdir(save_dir)
         for i, image_link in (enumerate(images_links)):
             save_path = os.path.join(save_dir, str(i) + '.jpg')
-            get_image_by_url(image_link, save_path)
+            self.get_image_by_url(image_link, save_path)
 
     def download_images(self, images_links, save_dir, download_type=0):
         if download_type == 0:
@@ -50,3 +86,6 @@ class Downloader:
                 if len(chunk) > 0:
                     x = threading.Thread(target=self.download_images_sync, args=(chunk, sub_path))
                     x.start()
+
+    def load_log_data(self):
+        return self.logger

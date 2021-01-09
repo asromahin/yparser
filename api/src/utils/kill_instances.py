@@ -28,7 +28,7 @@ def kill_chrome_instances():
             found += 1
 
     print(f'\n{found} processes found')
-    print(f'{killed} processes killed')
+    print(f'{killed} processes killed\n')
 
 
 if __name__ == "__main__":
