@@ -58,7 +58,7 @@ class YandexParser:
 
     def get_links_to_images(self, limit=200):
         last_len = 0
-        self.log('scroll page with images')
+        self.log('Start scrolling page with images')
         res_images = []
         while len(res_images) <= limit:
             imgs = self.wd.find_elements_by_class_name('serp-item__thumb')
@@ -75,17 +75,17 @@ class YandexParser:
                     self.log(e)
                     break
             last_len = len(imgs)
-        self.log('end scroll page with images')
+        self.log('End scrolling page with images')
         return res_images
 
     def get_images_by_links(self, images, save_path, download_type=0):
         if not os.path.exists(save_path):
             os.mkdir(save_path)
-        self.log('start grab images')
+        self.log('Start grabbing images')
         self.downloader.download_images(images, save_dir=save_path, download_type=download_type)
         log_data = self.downloader.load_log_data()
         self.log(log_data)
-        self.log('end grab images')
+        self.log('End grabbing images')
 
     def get_by_text(self, text):
         url = "https://yandex.ru/images/search?from=tabbar&text={}".format(text.replace(' ', '%20'))
@@ -112,7 +112,7 @@ class YandexParser:
             elem = elem.find_element_by_tag_name('li')
             elem = elem.find_element_by_tag_name('a')
             start_url = elem.get_attribute('href')
-            self.log('get url:', start_url)
+            self.log('Getting url:', start_url)
             self.set_url(start_url)
         except Exception as e:
             self.log('Failed to initiate "to_image_list" method')
@@ -131,20 +131,20 @@ class YandexParser:
     # @skip_error
     def get_by_image(self, image_path, save_path, limit=200, download_type=True):
         self.to_navigation()
-        self.log(f'download image from {image_path}')
+        self.log(f'Downloading image from {image_path}...')
         target_panel = self.wd.find_element_by_class_name('cbir-panel__file-input')
         utils.drag_and_drop_file(target_panel, image_path)
-        self.log('wait download')
+        self.log('Waiting for download...')
         self.wait_load_page()
         self.to_image_list()
-        self.log('go to page')
+        self.log('Entering page...')
         images = self.get_links_to_images(limit)
         self.get_images_by_links(images, save_path=save_path, download_type=download_type)
 
     # @skip_error
     def get_by_image_url(self, image_url, save_path, save_screen='screenshot.png', limit=200, download_type=True):
         self.to_navigation()
-        self.log(f'set image url {image_url}')
+        self.log(f'Setting image url {image_url}')
         cur_elem = self.wd.find_element_by_class_name('cbir-panel__input')
         target_panel = cur_elem.find_element_by_class_name('input__control')
         self.log(target_panel.get_attribute('value'))
