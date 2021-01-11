@@ -4,7 +4,8 @@ import time
 
 from api.parser import parse_by_images, parse_by_images_urls
 from api.src.utils.kill_instances import kill_chrome_instances
-from api.src.utils.utils import get_chunks
+from api.src.utils.utils import get_chunks, parsed_links
+from sys import stdout
 
 
 def parse_paralel_by_images(
@@ -59,6 +60,17 @@ def print_log_to_console(log_path, num_threads):
         print('')
 
 
+def print_percentage(parsed_links, image_urls):
+    counter = 0
+    while True:
+        stdout.write('\r{:.0f}% | {}/{} links parsed'.format(counter / len(image_urls) * 100,
+                                                                 counter,
+                                                                 len(image_urls)))
+        url = parsed_links.get()
+        counter += 1
+        parsed_links.task_done()
+
+
 def write_log_to_txt(log_path, filename, num_threads):
     with open(f'{filename}.txt', 'w') as file:
         for i in range(num_threads):
@@ -96,6 +108,10 @@ def parse_paralel_by_images_urls(
         os.mkdir(save_path)
     chunks = get_chunks(image_urls, paralel_threads)
     threads = []
+
+    counter = threading.Thread(target=print_percentage, args=[parsed_links, image_urls], daemon=True)
+    counter.start()
+
     for i, chunk in enumerate(chunks):
         sub_path = os.path.join(save_path, str(i))
         x = threading.Thread(target=parse_by_images_urls, args=(
@@ -112,6 +128,9 @@ def parse_paralel_by_images_urls(
     for thread in threads:
         thread.join()
     time.sleep(2)
+
+    print('\n\n')
+    parsed_links.join()
 
     from api.src.utils.utils import log_path
     if write_logger_to_txt:

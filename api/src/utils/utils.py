@@ -46,3 +46,4 @@ class Logger(list):
 
 
 log_path = queue.Queue()
+parsed_links = queue.Queue()
