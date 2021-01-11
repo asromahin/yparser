@@ -60,12 +60,14 @@ def print_log_to_console(log_path, num_threads):
         print('')
 
 
-def print_percentage(parsed_links, image_urls):
+def print_progress_bar(parsed_links, image_urls):
     counter = 0
     while True:
-        stdout.write('\r{:.0f}% | {}/{} links parsed'.format(counter / len(image_urls) * 100,
-                                                                 counter,
-                                                                 len(image_urls)))
+        stdout.write('\r{}{}| {:.0f}% | {}/{} links parsed'.format('█' * counter * 5,
+                                                                   '-' * (len(image_urls) - counter) * 5,
+                                                                   counter / len(image_urls) * 100,
+                                                                   counter,
+                                                                   len(image_urls)))
         url = parsed_links.get()
         counter += 1
         parsed_links.task_done()
@@ -109,7 +111,7 @@ def parse_paralel_by_images_urls(
     chunks = get_chunks(image_urls, paralel_threads)
     threads = []
 
-    counter = threading.Thread(target=print_percentage, args=[parsed_links, image_urls], daemon=True)
+    counter = threading.Thread(target=print_progress_bar, args=[parsed_links, image_urls], daemon=True)
     counter.start()
 
     for i, chunk in enumerate(chunks):
