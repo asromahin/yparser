@@ -4,9 +4,8 @@ import time
 
 from api.parser import parse_by_images, parse_by_images_urls
 from api.src.utils.kill_instances import kill_chrome_instances
-from api.src.utils.utils import get_chunks, parsed_links
-from api.src.utils.printing_logs import *
-from api.src.utils.utils import log_path
+from api.src.utils.utils import get_chunks
+from api.src.utils.logging import *
 
 
 def parse_paralel_by_images(

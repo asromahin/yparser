@@ -1,5 +1,6 @@
 from api.src.utils import utils
 from api.src.utils.kill_instances import kill_chrome_instances
+from api.src.utils.logging import Logger
 import time
 import os
 from api.src.downloader import Downloader
@@ -25,7 +26,7 @@ class YandexParser:
         self.wd = utils.init_wd(path=chromedriver_path)
         self.url = ''
         self.use_log = use_log
-        self.logger = utils.Logger()
+        self.logger = Logger()
 
     def set_url(self, url):
         self.url = url

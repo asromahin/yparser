@@ -1,5 +1,4 @@
 from selenium import webdriver
-import queue
 from api.src.js_code import JS_DROP_FILE
 
 
@@ -31,15 +30,3 @@ def get_chunks(data, count):
         chunks[it].append(data[i])
         it += 1
     return chunks
-
-
-class Logger(list):
-    def log(self, *args):
-        self.append(args)
-
-    def new_line(self):
-        self.log('-' * 60)
-
-
-log_path = queue.Queue()
-parsed_links = queue.Queue()

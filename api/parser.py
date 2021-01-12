@@ -1,6 +1,7 @@
 from api.src.yandex_parser import YandexParser
 import os
-from api.src.utils.utils import log_path, parsed_links
+from api.src.utils.logging import log_path, parsed_links
+
 
 def parse_by_images(
         image_paths: list,

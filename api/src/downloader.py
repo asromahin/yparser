@@ -1,4 +1,5 @@
-from api.src.utils.utils import get_chunks, Logger
+from api.src.utils.utils import get_chunks
+from api.src.utils.logging import Logger
 import os
 import asyncio
 

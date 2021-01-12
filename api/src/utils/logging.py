@@ -1,4 +1,5 @@
 from sys import stdout
+import queue
 
 
 def print_log_to_console(log_path, num_threads):
@@ -47,17 +48,29 @@ def write_log_to_txt(log_path, filename, num_threads):
     with open(f'{filename}.txt', 'w') as file:
         for i in range(num_threads):
             record = log_path.get()
-            file.write('*' * 60)
-            file.write(f'Record {i + 1}')
-            file.write('*' * 60)
+            file.write('*' * 60 + '\n')
+            file.write(f'Record {i + 1}' + '\n')
+            file.write('*' * 60 + '\n')
             for row in record:
                 if '), (' not in str(row):
-                    file.write(str(row)[1:-2].replace('[', '').replace(']', '').replace("',", '').replace("'", ''))
+                    file.write(str(row)[1:-2].replace('[', '').replace(']', '').replace("',", '').replace("'", '') + '\n')
                 else:
                     if str(row) == '[[]]':
                         file.write('No errors to log')
                     else:
                         row = str(row).split(sep='), (')
                         for item in row:
-                            file.write(item.replace('([(', '').replace(')],)', ''))
+                            file.write(item.replace('([(', '').replace(')],)', '') + '\n')
             file.write('')
+
+
+class Logger(list):
+    def log(self, *args):
+        self.append(args)
+
+    def new_line(self):
+        self.log('-' * 60)
+
+
+log_path = queue.Queue()
+parsed_links = queue.Queue()
