@@ -87,5 +87,5 @@ class Downloader:
                     x = threading.Thread(target=self.download_images_sync, args=(chunk, sub_path))
                     x.start()
 
-    def load_log_data(self):
+    def get_log_data(self):
         return self.logger

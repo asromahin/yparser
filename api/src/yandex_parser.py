@@ -40,7 +40,7 @@ class YandexParser:
             # print('-' * 60)
             self.logger.append([*data])
 
-    def load_log_data(self):
+    def get_log_data(self):
         return self.logger
 
     def get_image_link(self, elem):
@@ -83,7 +83,7 @@ class YandexParser:
             os.mkdir(save_path)
         self.log('Start grabbing images')
         self.downloader.download_images(images, save_dir=save_path, download_type=download_type)
-        log_data = self.downloader.load_log_data()
+        log_data = self.downloader.get_log_data()
         self.log(log_data)
         self.log('End grabbing images')
 
@@ -115,7 +115,7 @@ class YandexParser:
             self.log('Getting url:', start_url)
             self.set_url(start_url)
         except Exception as e:
-            self.log('Failed to initiate "to_image_list" method')
+            self.log('Failed to initiate "to_image_list" method : ', e)
 
     def wait_load_page(self, limit_seconds=60):
         start_url = self.wd.current_url

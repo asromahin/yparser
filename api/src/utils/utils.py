@@ -44,6 +44,9 @@ class Logger(list):
     def __getitem__(self, item):
         return self.log_path.__getitem__(item)
 
+    def new_line(self):
+        self.log('-'*60)
+
 
 log_path = queue.Queue()
 parsed_links = queue.Queue()

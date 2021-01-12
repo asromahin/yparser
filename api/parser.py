@@ -35,5 +35,5 @@ def parse_by_images_urls(
         sub_path = os.path.join(save_path, str(i))
         yp.get_by_image_url(image_url, limit=limit, download_type=download_type, save_path=sub_path)
         parsed_links.put(image_url)
-    data = yp.load_log_data()
+    data = yp.get_log_data()
     log_path.put(data)
