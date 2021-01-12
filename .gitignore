@@ -5,6 +5,7 @@
 *.jpg
 *.tiff
 *.webp
+*.exe
 
 /data
 /clean_data
