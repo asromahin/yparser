@@ -31,6 +31,6 @@ parse_paralel_by_images_urls(
     paralel_threads=2,
     n_threads=32,
     limit=500,
-    chromedriver_path='../tests/chromedriver.exe'
+    chromedriver_path='chromedriver'
 )
 

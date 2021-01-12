@@ -34,18 +34,11 @@ def get_chunks(data, count):
 
 
 class Logger(list):
-    def __init__(self):
-        super().__init__()
-        self.log_path = []
-
     def log(self, *args):
-        self.log_path.append(args)
-
-    def __getitem__(self, item):
-        return self.log_path.__getitem__(item)
+        self.append(args)
 
     def new_line(self):
-        self.log('-'*60)
+        self.log('-' * 60)
 
 
 log_path = queue.Queue()

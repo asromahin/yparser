@@ -1,4 +1,4 @@
-from api.src.utils.utils import get_chunks
+from api.src.utils.utils import get_chunks, Logger
 import os
 import asyncio
 
@@ -28,15 +28,15 @@ async def download_images_async(image_links, save_dir):
 class Downloader:
     def __init__(self, n_threads=16):
         self.n_threads = n_threads
-        self.logger = []
+        self.logger = Logger()
 
-    def log(self, *args):
-        self.logger.append([*args])
+    # def log(self, *args):
+    #     self.logger.append([*args])
 
     def save_image_by_response(self, response, savename, url):
         if not response.ok:
             # print(response, url)
-            self.log(response, url)
+            self.logger.log(response, url)
         else:
             with open(savename, 'wb') as handle:
                 for block in response.iter_content(1024):
@@ -62,7 +62,7 @@ class Downloader:
 
         except Exception as e:
             # print(e, url)
-            self.log(e, url)
+            self.logger.log(e, url)
 
     def download_images_sync(self, images_links, save_dir):
         if not os.path.exists(save_dir):
