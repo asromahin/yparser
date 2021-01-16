@@ -82,7 +82,7 @@ def parse_paralel_by_images_urls(
         threads.append(x)
     for thread in threads:
         thread.join()
-    time.sleep(1)
+    # time.sleep(1)
 
     if write_logger_to_txt:
         logger.end_logging(log_to_txt=True)
