@@ -4,25 +4,28 @@ import queue
 
 
 class Logger:
+
+    DELIMITER = '-'*60
+
     def __init__(self, num_threads=1, urls_list=None):
         self.urls_list = urls_list
         self.num_threads = num_threads
         self.log_path = queue.Queue()
         if urls_list is not None:
-            self.parsed_links = queue.Queue()
-            self.counter = threading.Thread(target=self.print_progress_bar, args=[20,], daemon=True)
-            self.counter.start()
+            self.last_record = queue.Queue()
+            self.last = threading.Thread(target=self.print_progress_bar, args=(20,), daemon=True)
+            self.last.start()
 
     def __repr__(self):
         return f'Logger(num_threads={self.num_threads}, urls_list={self.urls_list})'
 
     def log(self, item, thread_id=0):
         self.log_path.put({thread_id: item})
+        if self.urls_list is not None:
+            self.last_record.put(f'Thread-{thread_id} | {item}')
 
     def link_parsed(self, link=1, thread_id=0):
-        self.log('-' * 60, thread_id)
-        if self.urls_list is not None:
-            self.parsed_links.put(link)
+        self.log(self.DELIMITER, thread_id)
 
     def itemize_logs(self):
         log_dict = {}
@@ -69,7 +72,7 @@ class Logger:
     def end_logging(self, log_to_txt=False, log_to_console=True):
         log_dict = self.itemize_logs()
         if self.urls_list is not None:
-            self.parsed_links.join()
+            self.last_record.join()
         if log_to_console:
             self.print_logs_to_console(log_dict)
         if log_to_txt:
@@ -77,24 +80,53 @@ class Logger:
 
     def print_progress_bar(self, bar_length):
         counter = 0
+        progress_usual = '\r{}{}| {:.0f}% | {}/{} links parsed || {}'
+        progress_end = '\r{}{}| {:.0f}% | {}/{} links parsed || {}\n\n'
+        limit = 150
         while True:
+            last_record = self.last_record.get()
+            self.last_record.task_done()
+            if self.DELIMITER in last_record:
+                counter += 1
             if counter != len(self.urls_list):
-                stdout.write(
-                    '\r{}{}| {:.0f}% | {}/{} links parsed'.format('█' * counter * (bar_length // len(self.urls_list)),
-                                                                  '-' * (len(self.urls_list) - counter) * (
-                                                                          bar_length // len(self.urls_list)),
-                                                                  counter / len(self.urls_list) * 100,
-                                                                  counter,
-                                                                  len(self.urls_list)))
-            else:
-                stdout.write(
-                    '\r{}{}| {:.0f}% | {}/{} links parsed\n\n'.format(
+                if len(last_record) <= limit:
+                    stdout.write(progress_usual.format(
                         '█' * counter * (bar_length // len(self.urls_list)),
                         '-' * (len(self.urls_list) - counter) * (
                                 bar_length // len(self.urls_list)),
                         counter / len(self.urls_list) * 100,
                         counter,
-                        len(self.urls_list)))
-            url = self.parsed_links.get()
-            counter += 1
-            self.parsed_links.task_done()
+                        len(self.urls_list),
+                        last_record.replace(self.DELIMITER, 'Link parsed')
+                    ))
+                else:
+                    stdout.write(progress_usual.format(
+                        '█' * counter * (bar_length // len(self.urls_list)),
+                        '-' * (len(self.urls_list) - counter) * (
+                                bar_length // len(self.urls_list)),
+                        counter / len(self.urls_list) * 100,
+                        counter,
+                        len(self.urls_list),
+                        last_record[:150].replace(self.DELIMITER, 'Link parsed')
+                    ))
+            else:
+                if len(last_record) <= limit:
+                    stdout.write(progress_end.format(
+                        '█' * counter * (bar_length // len(self.urls_list)),
+                        '-' * (len(self.urls_list) - counter) * (
+                                bar_length // len(self.urls_list)),
+                        counter / len(self.urls_list) * 100,
+                        counter,
+                        len(self.urls_list),
+                        last_record.replace(self.DELIMITER, 'Link parsed')
+                    ))
+                else:
+                    stdout.write(progress_end.format(
+                        '█' * counter * (bar_length // len(self.urls_list)),
+                        '-' * (len(self.urls_list) - counter) * (
+                                bar_length // len(self.urls_list)),
+                        counter / len(self.urls_list) * 100,
+                        counter,
+                        len(self.urls_list),
+                        last_record[:150].replace(self.DELIMITER, 'Link parsed')
+                    ))

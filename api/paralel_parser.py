@@ -53,10 +53,13 @@ def parse_paralel_by_images_urls(
         write_logger_to_txt=False,
         show_progress=True
 ):
+    t1 = time.perf_counter()
     if kill_instances:
         kill_chrome_instances()
     if not os.path.exists(save_path):
         os.mkdir(save_path)
+    if 'debug.log' in os.listdir(os.getcwd()):
+        os.remove(f'{os.getcwd()}\\debug.log')
     chunks = get_chunks(image_urls, paralel_threads)
     threads = []
 
@@ -89,6 +92,8 @@ def parse_paralel_by_images_urls(
     else:
         logger.end_logging()
 
+    t2 = time.perf_counter()
+    print('\nCompleted in {:.2f} seconds.'.format(t2-t1))
     # if write_logger_to_txt:
     #     print('Writing log data to txt...')
     #     write_log_to_txt(log_path, 'log', num_threads=paralel_threads)

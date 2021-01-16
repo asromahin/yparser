@@ -38,7 +38,7 @@ class Downloader:
     def save_image_by_response(self, response, savename, url):
         if not response.ok:
             # print(response, url)
-            self.logger.log([response, url], thread_id=self.thread_id)
+            self.logger.log(f'{response}, {url}', thread_id=self.thread_id)
             # pass
         else:
             with open(savename, 'wb') as handle:
@@ -65,7 +65,7 @@ class Downloader:
 
         except Exception as e:
             # print(e, url)
-            self.logger.log([e, url], thread_id=self.thread_id)
+            self.logger.log(f'{e}, {url}', thread_id=self.thread_id)
             # pass
 
     def download_images_sync(self, images_links, save_dir):
