@@ -13,6 +13,9 @@ class Logger:
             self.counter = threading.Thread(target=self.print_progress_bar, args=[20,], daemon=True)
             self.counter.start()
 
+    def __repr__(self):
+        return f'Logger(num_threads={self.num_threads}, urls_list={self.urls_list})'
+
     def log(self, item, thread_id=0):
         self.log_path.put({thread_id: item})
 
