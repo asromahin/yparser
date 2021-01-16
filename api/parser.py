@@ -1,6 +1,6 @@
 from api.src.yandex_parser import YandexParser
 import os
-from api.src.utils.logging import log_path, parsed_links
+from api.src.utils.logger import Logger
 
 
 def parse_by_images(
@@ -28,13 +28,19 @@ def parse_by_images_urls(
         n_threads: int = 16,
         kill_instances: bool = True,
         chromedriver_path: str = 'chromedriver',
+        logger=Logger,
+        thread_id=0
 ):
-    yp = YandexParser(chromedriver_path=chromedriver_path, kill_instances=kill_instances, n_threads=n_threads)
+    yp = YandexParser(chromedriver_path=chromedriver_path,
+                      kill_instances=kill_instances,
+                      n_threads=n_threads,
+                      logger=logger,
+                      thread_id=thread_id)
     if not os.path.exists(save_path):
         os.mkdir(save_path)
     for i, image_url in enumerate(image_urls):
         sub_path = os.path.join(save_path, str(i))
         yp.get_by_image_url(image_url, limit=limit, download_type=download_type, save_path=sub_path)
-        parsed_links.put(image_url)
-    data = yp.get_log_data()
-    log_path.put(data)
+        # parsed_links.put(image_url)
+    # data = yp.get_log_data()
+    # log_path.put(data)

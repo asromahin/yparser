@@ -2,7 +2,7 @@ from selenium import webdriver
 from api.src.js_code import JS_DROP_FILE
 
 
-def init_wd(path='chromedriver', headless=True):
+def init_wd(path='../chromedriver', headless=True):
     """
     Initializing Chrome Webdriver from selenium library
     """

@@ -5,7 +5,7 @@ import time
 from api.parser import parse_by_images, parse_by_images_urls
 from api.src.utils.kill_instances import kill_chrome_instances
 from api.src.utils.utils import get_chunks
-from api.src.utils.logging import *
+from api.src.utils.logger import *
 
 
 def parse_paralel_by_images(
@@ -50,7 +50,8 @@ def parse_paralel_by_images_urls(
         kill_instances: bool = True,
         paralel_threads=2,
         chromedriver_path: str = 'chromedriver',
-        write_logger_to_txt=False
+        write_logger_to_txt=False,
+        show_progress=True
 ):
     if kill_instances:
         kill_chrome_instances()
@@ -59,8 +60,10 @@ def parse_paralel_by_images_urls(
     chunks = get_chunks(image_urls, paralel_threads)
     threads = []
 
-    counter = threading.Thread(target=print_progress_bar, args=[parsed_links, image_urls, 20], daemon=True)
-    counter.start()
+    if show_progress:
+        logger = Logger(paralel_threads, image_urls)
+    else:
+        logger = Logger(paralel_threads)
 
     for i, chunk in enumerate(chunks):
         sub_path = os.path.join(save_path, str(i))
@@ -72,6 +75,8 @@ def parse_paralel_by_images_urls(
             n_threads,
             False,
             chromedriver_path,
+            logger,
+            i + 1
         ))
         x.start()
         threads.append(x)
@@ -79,13 +84,16 @@ def parse_paralel_by_images_urls(
         thread.join()
     time.sleep(1)
 
-    parsed_links.join()
-
     if write_logger_to_txt:
-        print('Writing log data to txt...')
-        write_log_to_txt(log_path, 'log', num_threads=paralel_threads)
-        print('Written to txt')
+        logger.end_logging(log_to_txt=True)
     else:
-        print_log_to_console(log_path, num_threads=paralel_threads)
-    if log_path.empty():
-        print('\nLog path emptied')
+        logger.end_logging()
+
+    # if write_logger_to_txt:
+    #     print('Writing log data to txt...')
+    #     write_log_to_txt(log_path, 'log', num_threads=paralel_threads)
+    #     print('Written to txt')
+    # else:
+    #     print_log_to_console(log_path, num_threads=paralel_threads)
+    # if log_path.empty():
+    #     print('\nLog path emptied')

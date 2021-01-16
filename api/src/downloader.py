@@ -1,5 +1,5 @@
 from api.src.utils.utils import get_chunks
-from api.src.utils.logging import Logger
+from api.src.utils.logger import Logger
 import os
 import asyncio
 
@@ -27,9 +27,10 @@ async def download_images_async(image_links, save_dir):
 
 
 class Downloader:
-    def __init__(self, n_threads=16):
+    def __init__(self, n_threads=16, logger=Logger(), thread_id=0):
         self.n_threads = n_threads
-        self.logger = Logger()
+        self.logger = logger
+        self.thread_id = thread_id
 
     # def log(self, *args):
     #     self.logger.append([*args])
@@ -37,7 +38,8 @@ class Downloader:
     def save_image_by_response(self, response, savename, url):
         if not response.ok:
             # print(response, url)
-            self.logger.log(response, url)
+            self.logger.log([response, url], thread_id=self.thread_id)
+            # pass
         else:
             with open(savename, 'wb') as handle:
                 for block in response.iter_content(1024):
@@ -63,7 +65,8 @@ class Downloader:
 
         except Exception as e:
             # print(e, url)
-            self.logger.log(e, url)
+            self.logger.log([e, url], thread_id=self.thread_id)
+            # pass
 
     def download_images_sync(self, images_links, save_dir):
         if not os.path.exists(save_dir):
@@ -82,11 +85,12 @@ class Downloader:
             if not os.path.exists(save_dir):
                 os.mkdir(save_dir)
             chunks = get_chunks(images_links, self.n_threads)
+            threads = []
             for i, chunk in enumerate(chunks):
                 sub_path = os.path.join(save_dir, str(i))
                 if len(chunk) > 0:
                     x = threading.Thread(target=self.download_images_sync, args=(chunk, sub_path))
                     x.start()
-
-    def get_log_data(self):
-        return self.logger
+                    threads.append(x)
+            for thread in threads:
+                thread.join()
