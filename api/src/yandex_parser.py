@@ -4,6 +4,7 @@ from api.src.utils.logger import Logger
 import time
 import os
 from api.src.downloader import Downloader
+from selenium.common.exceptions import NoSuchElementException
 
 
 def skip_error(func):
@@ -127,6 +128,24 @@ class YandexParser:
             self.logger.log(['while', seconds, 'seconds'], thread_id=self.thread_id)
         time.sleep(1)
 
+    def get_tags_and_descr(self):
+        try:
+            tag_panel = self.wd.find_element_by_css_selector('div.CbirItem.CbirTags')
+            tags = tag_panel.find_elements_by_tag_name('a')
+            self.logger.log(f'Tags: {", ".join([tag.text for tag in tags])}', thread_id=self.thread_id)
+        except NoSuchElementException:
+            self.logger.log('No tags available', thread_id=self.thread_id)
+
+        try:
+            try:
+                self.wd.find_element_by_css_selector('div.CbirItem.CbirOcr').find_element_by_tag_name('button').click()
+            except Exception:
+                pass
+            ocr_text = self.wd.find_element_by_css_selector('div.CbirOcr-Text').text.replace('\n', ' ')
+            self.logger.log('OcrText: {}'.format(ocr_text), thread_id=self.thread_id)
+        except Exception as e:
+            pass
+
     # @skip_error
     def get_by_image(self, image_path, save_path, limit=200, download_type=True):
         self.to_navigation()
@@ -155,6 +174,7 @@ class YandexParser:
         cur_elem.find_element_by_class_name('cbir-panel__search-button').click()
         time.sleep(5)
         # self.wd.save_screenshot('test.png')
+        self.get_tags_and_descr()
         self.to_image_list()
         images = self.get_links_to_images(limit)
         self.get_images_by_links(images, save_path=save_path, download_type=download_type)
