@@ -4,7 +4,12 @@ from api.src.utils.logger import Logger
 import time
 import os
 from api.src.downloader import Downloader
+
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 
 
 def skip_error(func):
@@ -63,9 +68,11 @@ class YandexParser:
         self.logger.log('Start scrolling page with images', thread_id=self.thread_id)
         res_images = []
         while len(res_images) <= limit:
-            imgs = self.wd.find_elements_by_class_name('serp-item__thumb')
-            time.sleep(1)
-            imgs = self.wd.find_elements_by_class_name('serp-item__link')
+            # imgs = self.wd.find_elements_by_class_name('serp-item__thumb')
+            imgs = WebDriverWait(self.wd, 5).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'serp'
+                                                                                                       '-item__link')))
+            # time.sleep(1)
+            # imgs = self.wd.find_elements_by_class_name('serp-item__link')
             if last_len == len(imgs):
                 try:
                     self.logger.log(len(res_images), thread_id=self.thread_id)
@@ -101,8 +108,12 @@ class YandexParser:
     def to_navigation(self):
         self.wd.get('https://yandex.ru/images/')
         self.logger.log('Opening https://yandex.ru/images/', thread_id=self.thread_id)
-        time.sleep(1)
-        self.wd.find_element_by_class_name('input__cbir-button').click()
+        elem = WebDriverWait(self.wd, 5).until(
+            EC.presence_of_element_located((By.CLASS_NAME, 'input__cbir-button')))
+        elem.click()
+        # time.sleep(1)
+        # self.wd.find_element_by_class_name('input__cbir-button').click()
+        WebDriverWait(self.wd, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'cbir-panel__file-input')))
         time.sleep(1)
 
     def to_image_list(self):
@@ -139,8 +150,11 @@ class YandexParser:
         try:
             try:
                 self.wd.find_element_by_css_selector('div.CbirItem.CbirOcr').find_element_by_tag_name('button').click()
-            except Exception:
+                WebDriverWait(self.wd, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.CbirOcr-Text')))
+            except NoSuchElementException:
                 pass
+            except TimeoutException:
+                self.logger.log('Took too long to find button', thread_id=self.thread_id)
             ocr_text = self.wd.find_element_by_css_selector('div.CbirOcr-Text').text.replace('\n', ' ')
             self.logger.log('OcrText: {}'.format(ocr_text), thread_id=self.thread_id)
         except Exception as e:
@@ -170,9 +184,11 @@ class YandexParser:
         target_panel.clear()
         target_panel.send_keys(image_url)
         # self.wd.get_screenshot_as_file(save_screen)
-        time.sleep(2)
-        cur_elem.find_element_by_class_name('cbir-panel__search-button').click()
-        time.sleep(5)
+        elem = WebDriverWait(self.wd, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'cbir-panel__search-button')))
+        # time.sleep(2)
+        elem.click()
+        WebDriverWait(self.wd, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.CbirItem.CbirTags')))
+        # time.sleep(3)
         # self.wd.save_screenshot('test.png')
         self.get_tags_and_descr()
         self.to_image_list()

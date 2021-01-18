@@ -20,7 +20,7 @@ class Logger:
         return f'Logger(num_threads={self.num_threads}, urls_list={self.urls_list})'
 
     def log(self, item, thread_id=0):
-        self.log_path.put({thread_id: item})
+        self.log_path.put({thread_id: str(item).replace('\n', ' ')})
         if self.urls_list is not None:
             self.last_record.put(f'Thread-{thread_id} | {item}')
 
@@ -81,7 +81,9 @@ class Logger:
     def print_progress_bar(self, bar_length):
         counter = 0
         progress_usual = '\r{}{}| {:.0f}% | {}/{} links parsed || {}'
+        progress_usual_short = '\r{}{}| {:.0f}% | {}/{} links parsed || {}...'
         progress_end = '\r{}{}| {:.0f}% | {}/{} links parsed || {}\n\n'
+        progress_end_short = '\r{}{}| {:.0f}% | {}/{} links parsed || {}...\n\n'
         limit = 150
         while True:
             last_record = self.last_record.get()
@@ -100,7 +102,7 @@ class Logger:
                         last_record.replace(self.DELIMITER, 'Link parsed')
                     ))
                 else:
-                    stdout.write(progress_usual.format(
+                    stdout.write(progress_usual_short.format(
                         '█' * counter * (bar_length // len(self.urls_list)),
                         '-' * (len(self.urls_list) - counter) * (
                                 bar_length // len(self.urls_list)),
@@ -121,7 +123,7 @@ class Logger:
                         last_record.replace(self.DELIMITER, 'Link parsed')
                     ))
                 else:
-                    stdout.write(progress_end.format(
+                    stdout.write(progress_end_short.format(
                         '█' * counter * (bar_length // len(self.urls_list)),
                         '-' * (len(self.urls_list) - counter) * (
                                 bar_length // len(self.urls_list)),
