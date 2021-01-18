@@ -24,7 +24,7 @@ class Logger:
         if self.urls_list is not None:
             self.last_record.put(f'Thread-{thread_id} | {item}')
 
-    def link_parsed(self, link=1, thread_id=0):
+    def link_parsed(self, thread_id=0):
         self.log(self.DELIMITER, thread_id)
 
     def itemize_logs(self):
