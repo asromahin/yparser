@@ -194,4 +194,4 @@ class YandexParser:
         self.to_image_list()
         images = self.get_links_to_images(limit)
         self.get_images_by_links(images, save_path=save_path, download_type=download_type)
-        self.logger.link_parsed(link=image_url, thread_id=self.thread_id)
+        self.logger.link_parsed(self.thread_id)

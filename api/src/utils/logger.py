@@ -7,13 +7,14 @@ class Logger:
 
     DELIMITER = '-'*60
 
-    def __init__(self, num_threads=1, urls_list=None):
+    def __init__(self, num_threads=1, urls_list=None, progress_bar_length=20):
         self.urls_list = urls_list
         self.num_threads = num_threads
         self.log_path = queue.Queue()
+        self.progress_bar_length = progress_bar_length
         if urls_list is not None:
             self.last_record = queue.Queue()
-            self.last = threading.Thread(target=self.print_progress_bar, args=(20,), daemon=True)
+            self.last = threading.Thread(target=self.print_progress_bar, args=(self.progress_bar_length,), daemon=True)
             self.last.start()
 
     def __repr__(self):
@@ -93,9 +94,8 @@ class Logger:
             if counter != len(self.urls_list):
                 if len(last_record) <= limit:
                     stdout.write(progress_usual.format(
-                        '█' * counter * (bar_length // len(self.urls_list)),
-                        '-' * (len(self.urls_list) - counter) * (
-                                bar_length // len(self.urls_list)),
+                        '█' * int(counter / len(self.urls_list) * bar_length),
+                        '-' * int((1 - counter / len(self.urls_list)) * bar_length),
                         counter / len(self.urls_list) * 100,
                         counter,
                         len(self.urls_list),
@@ -103,9 +103,8 @@ class Logger:
                     ))
                 else:
                     stdout.write(progress_usual_short.format(
-                        '█' * counter * (bar_length // len(self.urls_list)),
-                        '-' * (len(self.urls_list) - counter) * (
-                                bar_length // len(self.urls_list)),
+                        '█' * int(counter / len(self.urls_list) * bar_length),
+                        '-' * int((1 - counter / len(self.urls_list)) * bar_length),
                         counter / len(self.urls_list) * 100,
                         counter,
                         len(self.urls_list),
@@ -114,9 +113,8 @@ class Logger:
             else:
                 if len(last_record) <= limit:
                     stdout.write(progress_end.format(
-                        '█' * counter * (bar_length // len(self.urls_list)),
-                        '-' * (len(self.urls_list) - counter) * (
-                                bar_length // len(self.urls_list)),
+                        '█' * int(counter / len(self.urls_list) * bar_length),
+                        '-' * int((1 - counter / len(self.urls_list)) * bar_length),
                         counter / len(self.urls_list) * 100,
                         counter,
                         len(self.urls_list),
@@ -124,9 +122,8 @@ class Logger:
                     ))
                 else:
                     stdout.write(progress_end_short.format(
-                        '█' * counter * (bar_length // len(self.urls_list)),
-                        '-' * (len(self.urls_list) - counter) * (
-                                bar_length // len(self.urls_list)),
+                        '█' * int(counter / len(self.urls_list) * bar_length),
+                        '-' * int((1 - counter / len(self.urls_list)) * bar_length),
                         counter / len(self.urls_list) * 100,
                         counter,
                         len(self.urls_list),
