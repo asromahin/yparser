@@ -1,4 +1,5 @@
 from sys import stdout
+import time
 import threading
 import queue
 
@@ -12,6 +13,7 @@ class Logger:
         self.num_threads = num_threads
         self.log_path = queue.Queue()
         self.progress_bar_length = progress_bar_length
+        self.t0 = time.perf_counter()
         if urls_list is not None:
             self.last_record = queue.Queue()
             self.last = threading.Thread(target=self.print_progress_bar, args=(self.progress_bar_length,), daemon=True)
@@ -33,44 +35,55 @@ class Logger:
         while not self.log_path.empty():
             item = self.log_path.get()
             self.log_path.task_done()
-            key = int(str(item.keys()).replace('dict_keys([', '').replace('])', ''))
-            value = [str(item.values()).replace('dict_values([', '').replace('])', '')]
-            if key in log_dict.keys():
-                log_dict[key] += value
+            if 'Logger working time' in item:
+                log_dict['WorkTime'] = item
             else:
-                log_dict[key] = value
+                key = int(str(item.keys()).replace('dict_keys([', '').replace('])', ''))
+                value = [str(item.values()).replace('dict_values([', '').replace('])', '')]
+                if key in log_dict.keys():
+                    log_dict[key] += value
+                else:
+                    log_dict[key] = value
         return log_dict
 
     @staticmethod
     def print_logs_to_console(log_dict):
         for k, v in log_dict.items():
-            print('*' * 60)
-            print(f'Thread {k}')
-            print('*' * 60)
-            for record in v:
-                if record.isdigit():
-                    print(record)
-                else:
-                    print(record[1:-1])
-            print('')
+            if k != 'WorkTime':
+                print('*' * 60)
+                print(f'Thread {k}')
+                print('*' * 60)
+                for record in v:
+                    if record.isdigit():
+                        print(record)
+                    else:
+                        print(record[1:-1])
+                print('')
+            else:
+                print(v)
 
     @staticmethod
     def write_logs_to_txt(log_dict):
         print('Writing to txt...')
         with open('log.txt', 'w') as file:
             for k, v in log_dict.items():
-                file.write('*' * 60 + '\n')
-                file.write(f'Thread {k}' + '\n')
-                file.write('*' * 60 + '\n')
-                for record in v:
-                    if record.isdigit():
-                        file.write(record + '\n')
-                    else:
-                        file.write(record[1:-1] + '\n')
-                file.write('' + '\n')
+                if k != 'WorkTime':
+                    file.write('*' * 60 + '\n')
+                    file.write(f'Thread {k}' + '\n')
+                    file.write('*' * 60 + '\n')
+                    for record in v:
+                        if record.isdigit():
+                            file.write(record + '\n')
+                        else:
+                            file.write(record[1:-1] + '\n')
+                    file.write('' + '\n')
+                else:
+                    file.write(v + '\n')
         print('Written to txt')
 
     def end_logging(self, log_to_txt=False, log_to_console=True):
+        t1 = time.perf_counter()
+        self.log_path.put('Logger working time: {:.0f} seconds'.format(t1 - self.t0))
         log_dict = self.itemize_logs()
         if self.urls_list is not None:
             self.last_record.join()
