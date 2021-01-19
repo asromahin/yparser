@@ -5,7 +5,7 @@ import time
 from api.parser import parse_by_images, parse_by_images_urls
 from api.src.utils.kill_instances import kill_chrome_instances
 from api.src.utils.utils import get_chunks
-from api.src.utils.logger import *
+from api.src.utils.logger import Logger
 
 
 def parse_paralel_by_images(
@@ -53,7 +53,6 @@ def parse_paralel_by_images_urls(
         write_logger_to_txt=False,
         show_progress=True
 ):
-    t1 = time.perf_counter()
     if kill_instances:
         kill_chrome_instances()
     if not os.path.exists(save_path):
@@ -91,14 +90,3 @@ def parse_paralel_by_images_urls(
         logger.end_logging(log_to_txt=True)
     else:
         logger.end_logging()
-
-    t2 = time.perf_counter()
-    print('\nCompleted in {:.2f} seconds.'.format(t2-t1))
-    # if write_logger_to_txt:
-    #     print('Writing log data to txt...')
-    #     write_log_to_txt(log_path, 'log', num_threads=paralel_threads)
-    #     print('Written to txt')
-    # else:
-    #     print_log_to_console(log_path, num_threads=paralel_threads)
-    # if log_path.empty():
-    #     print('\nLog path emptied')
