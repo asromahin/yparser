@@ -8,26 +8,26 @@ class Logger:
 
     DELIMITER = '-'*60
 
-    def __init__(self, num_threads=1, urls_list=None, progress_bar_length=20):
-        self.urls_list = urls_list
+    def __init__(self, items_list=None, num_threads=1, progress_bar_length=20):
+        self.items_list = items_list
         self.num_threads = num_threads
         self.log_path = queue.Queue()
         self.progress_bar_length = progress_bar_length
         self.t0 = time.perf_counter()
-        if urls_list is not None:
+        if items_list is not None:
             self.last_record = queue.Queue()
             self.last = threading.Thread(target=self.print_progress_bar, args=(self.progress_bar_length,), daemon=True)
             self.last.start()
 
     def __repr__(self):
-        return f'Logger(num_threads={self.num_threads}, urls_list={self.urls_list})'
+        return f'Logger(num_threads={self.num_threads}, urls_list={self.items_list})'
 
     def log(self, item, thread_id=0):
         self.log_path.put({thread_id: str(item).replace('\n', ' ')})
-        if self.urls_list is not None:
+        if self.items_list is not None:
             self.last_record.put(f'Thread-{thread_id} | {item}')
 
-    def link_parsed(self, thread_id=0):
+    def item_processed(self, thread_id=0):
         self.log(self.DELIMITER, thread_id)
 
     def itemize_logs(self):
@@ -83,9 +83,20 @@ class Logger:
 
     def end_logging(self, log_to_txt=False, log_to_console=True):
         t1 = time.perf_counter()
-        self.log_path.put('Logger working time: {:.0f} seconds'.format(t1 - self.t0))
+        seconds = round(t1 - self.t0)
+        if seconds < 60:
+            self.log_path.put(f'Logger working time: {seconds} seconds')
+        elif 60 <= seconds < 3600:
+            minutes = seconds // 60
+            seconds -= minutes * 60
+            self.log_path.put(f'Logger working time: {minutes}:{seconds} minutes')
+        elif seconds >= 3600:
+            hours = seconds // 3600
+            minutes = (seconds - hours * 3600) // 60
+            seconds -= (hours * 3600 + minutes * 60)
+            self.log_path.put(f'Logger working time: {hours}:{minutes}:{seconds} hours')
         log_dict = self.itemize_logs()
-        if self.urls_list is not None:
+        if self.items_list is not None:
             self.last_record.join()
         if log_to_console:
             self.print_logs_to_console(log_dict)
@@ -94,51 +105,51 @@ class Logger:
 
     def print_progress_bar(self, bar_length):
         counter = 0
-        progress_usual = '\r{}{}| {:.0f}% | {}/{} links parsed || {}'
-        progress_usual_short = '\r{}{}| {:.0f}% | {}/{} links parsed || {}...'
-        progress_end = '\r{}{}| {:.0f}% | {}/{} links parsed || {}\n\n'
-        progress_end_short = '\r{}{}| {:.0f}% | {}/{} links parsed || {}...\n\n'
+        progress_usual = '\r{}{}| {:.0f}% | {}/{} items processed || {}'
+        progress_usual_short = '\r{}{}| {:.0f}% | {}/{} items processed || {}...'
+        progress_end = '\r{}{}| {:.0f}% | {}/{} items processed || {}\n\n'
+        progress_end_short = '\r{}{}| {:.0f}% | {}/{} items processed || {}...\n\n'
         limit = 150
         while True:
             last_record = self.last_record.get()
             self.last_record.task_done()
             if self.DELIMITER in last_record:
                 counter += 1
-            if counter != len(self.urls_list):
+            if counter != len(self.items_list):
                 if len(last_record) <= limit:
                     stdout.write(progress_usual.format(
-                        '█' * int(counter / len(self.urls_list) * bar_length),
-                        '-' * int((1 - counter / len(self.urls_list)) * bar_length),
-                        counter / len(self.urls_list) * 100,
+                        '█' * int(counter / len(self.items_list) * bar_length),
+                        '-' * int((1 - counter / len(self.items_list)) * bar_length),
+                        counter / len(self.items_list) * 100,
                         counter,
-                        len(self.urls_list),
-                        last_record.replace(self.DELIMITER, 'Link parsed')
+                        len(self.items_list),
+                        last_record.replace(self.DELIMITER, 'Item processed')
                     ))
                 else:
                     stdout.write(progress_usual_short.format(
-                        '█' * int(counter / len(self.urls_list) * bar_length),
-                        '-' * int((1 - counter / len(self.urls_list)) * bar_length),
-                        counter / len(self.urls_list) * 100,
+                        '█' * int(counter / len(self.items_list) * bar_length),
+                        '-' * int((1 - counter / len(self.items_list)) * bar_length),
+                        counter / len(self.items_list) * 100,
                         counter,
-                        len(self.urls_list),
-                        last_record[:150].replace(self.DELIMITER, 'Link parsed')
+                        len(self.items_list),
+                        last_record[:150].replace(self.DELIMITER, 'Item processed')
                     ))
             else:
                 if len(last_record) <= limit:
                     stdout.write(progress_end.format(
-                        '█' * int(counter / len(self.urls_list) * bar_length),
-                        '-' * int((1 - counter / len(self.urls_list)) * bar_length),
-                        counter / len(self.urls_list) * 100,
+                        '█' * int(counter / len(self.items_list) * bar_length),
+                        '-' * int((1 - counter / len(self.items_list)) * bar_length),
+                        counter / len(self.items_list) * 100,
                         counter,
-                        len(self.urls_list),
-                        last_record.replace(self.DELIMITER, 'Link parsed')
+                        len(self.items_list),
+                        last_record.replace(self.DELIMITER, 'Item processed')
                     ))
                 else:
                     stdout.write(progress_end_short.format(
-                        '█' * int(counter / len(self.urls_list) * bar_length),
-                        '-' * int((1 - counter / len(self.urls_list)) * bar_length),
-                        counter / len(self.urls_list) * 100,
+                        '█' * int(counter / len(self.items_list) * bar_length),
+                        '-' * int((1 - counter / len(self.items_list)) * bar_length),
+                        counter / len(self.items_list) * 100,
                         counter,
-                        len(self.urls_list),
-                        last_record[:150].replace(self.DELIMITER, 'Link parsed')
+                        len(self.items_list),
+                        last_record[:150].replace(self.DELIMITER, 'Item processed')
                     ))

@@ -63,9 +63,9 @@ def parse_paralel_by_images_urls(
     threads = []
 
     if show_progress:
-        logger = Logger(paralel_threads, image_urls)
+        logger = Logger(image_urls, paralel_threads)
     else:
-        logger = Logger(paralel_threads)
+        logger = Logger(num_threads=paralel_threads)
 
     for i, chunk in enumerate(chunks):
         sub_path = os.path.join(save_path, str(i))
