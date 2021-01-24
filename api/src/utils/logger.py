@@ -89,11 +89,14 @@ class Logger:
         elif 60 <= seconds < 3600:
             minutes = seconds // 60
             seconds -= minutes * 60
+            seconds = seconds if seconds >= 10 else str(0) + str(seconds)
             self.log_path.put(f'Logger working time: {minutes}:{seconds} minutes')
         elif seconds >= 3600:
             hours = seconds // 3600
             minutes = (seconds - hours * 3600) // 60
             seconds -= (hours * 3600 + minutes * 60)
+            minutes = minutes if minutes >= 10 else str(0) + str(minutes)
+            seconds = seconds if seconds >= 10 else str(0) + str(seconds)
             self.log_path.put(f'Logger working time: {hours}:{minutes}:{seconds} hours')
         log_dict = self.itemize_logs()
         if self.items_list is not None:
