@@ -5,8 +5,7 @@ import queue
 
 
 class Logger:
-
-    DELIMITER = '-'*60
+    DELIMITER = '-' * 60
 
     def __init__(self, items_list=None, num_threads=1, progress_bar_length=20):
         self.items_list = items_list
@@ -15,6 +14,7 @@ class Logger:
         self.progress_bar_length = progress_bar_length
         self.t0 = time.perf_counter()
         if items_list is not None:
+            self.t_est = ''
             self.last_record = queue.Queue()
             self.last = threading.Thread(target=self.print_progress_bar, args=(self.progress_bar_length,), daemon=True)
             self.last.start()
@@ -81,23 +81,27 @@ class Logger:
                     file.write(v + '\n')
         print('Written to txt')
 
-    def end_logging(self, log_to_txt=False, log_to_console=True):
-        t1 = time.perf_counter()
-        seconds = round(t1 - self.t0)
+    @staticmethod
+    def convert_seconds(seconds):
+        seconds = round(seconds)
         if seconds < 60:
-            self.log_path.put(f'Logger working time: {seconds} seconds')
+            return f'{seconds} sec'
         elif 60 <= seconds < 3600:
             minutes = seconds // 60
             seconds -= minutes * 60
             seconds = seconds if seconds >= 10 else str(0) + str(seconds)
-            self.log_path.put(f'Logger working time: {minutes}:{seconds} minutes')
+            return f'{minutes}:{seconds} min'
         elif seconds >= 3600:
             hours = seconds // 3600
             minutes = (seconds - hours * 3600) // 60
             seconds -= (hours * 3600 + minutes * 60)
             minutes = minutes if minutes >= 10 else str(0) + str(minutes)
             seconds = seconds if seconds >= 10 else str(0) + str(seconds)
-            self.log_path.put(f'Logger working time: {hours}:{minutes}:{seconds} hours')
+            return f'{hours}:{minutes}:{seconds} h'
+
+    def end_logging(self, log_to_txt=False, log_to_console=True):
+        t1 = time.perf_counter()
+        self.log_path.put(f'Logger working time: {self.convert_seconds(t1 - self.t0)}')
         log_dict = self.itemize_logs()
         if self.items_list is not None:
             self.last_record.join()
@@ -108,16 +112,18 @@ class Logger:
 
     def print_progress_bar(self, bar_length):
         counter = 0
-        progress_usual = '\r{}{}| {:.0f}% | {}/{} items processed || {}'
-        progress_usual_short = '\r{}{}| {:.0f}% | {}/{} items processed || {}...'
-        progress_end = '\r{}{}| {:.0f}% | {}/{} items processed || {}\n\n'
-        progress_end_short = '\r{}{}| {:.0f}% | {}/{} items processed || {}...\n\n'
+        progress_usual = '\r{}{}| {:.0f}% | {}/{} items processed | {} || {}'
+        progress_usual_short = '\r{}{}| {:.0f}% | {}/{} items processed | {} || {}...'
+        progress_end = '\r{}{}| {:.0f}% | {}/{} items processed | {} || {}\n\n'
+        progress_end_short = '\r{}{}| {:.0f}% | {}/{} items processed | {} || {}...\n\n'
         limit = 150
         while True:
             last_record = self.last_record.get()
             self.last_record.task_done()
             if self.DELIMITER in last_record:
                 counter += 1
+                time_left = self.convert_seconds((time.perf_counter() - self.t0) * (len(self.items_list) / counter - 1))
+                self.t_est = f'Estimated time left: {time_left} '
             if counter != len(self.items_list):
                 if len(last_record) <= limit:
                     stdout.write(progress_usual.format(
@@ -126,6 +132,7 @@ class Logger:
                         counter / len(self.items_list) * 100,
                         counter,
                         len(self.items_list),
+                        self.t_est,
                         last_record.replace(self.DELIMITER, 'Item processed')
                     ))
                 else:
@@ -135,7 +142,8 @@ class Logger:
                         counter / len(self.items_list) * 100,
                         counter,
                         len(self.items_list),
-                        last_record[:150].replace(self.DELIMITER, 'Item processed')
+                        self.t_est,
+                        last_record[:100].replace(self.DELIMITER, 'Item processed')
                     ))
             else:
                 if len(last_record) <= limit:
@@ -145,6 +153,7 @@ class Logger:
                         counter / len(self.items_list) * 100,
                         counter,
                         len(self.items_list),
+                        self.t_est,
                         last_record.replace(self.DELIMITER, 'Item processed')
                     ))
                 else:
@@ -154,5 +163,6 @@ class Logger:
                         counter / len(self.items_list) * 100,
                         counter,
                         len(self.items_list),
-                        last_record[:150].replace(self.DELIMITER, 'Item processed')
+                        self.t_est,
+                        last_record[:100].replace(self.DELIMITER, 'Item processed')
                     ))
