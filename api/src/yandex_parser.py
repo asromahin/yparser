@@ -94,11 +94,13 @@ class YandexParser:
         self.downloader.download_images(images, save_dir=save_path, download_type=download_type)
         self.logger.log('End grabbing images', thread_id=self.thread_id)
 
-    def get_by_text(self, text):
+    def get_by_text(self, text, save_path, limit=200, download_type=0):
         url = "https://yandex.ru/images/search?from=tabbar&text={}".format(text.replace(' ', '%20'))
         self.set_url(url)
-        self.get_links_to_images()
-        self.get_images_by_links()
+        self.logger.log(f'Parsing {text} ...', self.thread_id)
+        images = self.get_links_to_images(limit)
+        self.get_images_by_links(images, save_path=save_path, download_type=download_type)
+        self.logger.item_processed(thread_id=self.thread_id)
 
     def get_by_url(self, url):
         self.set_url(url)

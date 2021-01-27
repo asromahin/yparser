@@ -39,8 +39,28 @@ def parse_by_images_urls(
     if not os.path.exists(save_path):
         os.mkdir(save_path)
     for i, image_url in enumerate(image_urls):
-        sub_path = os.path.join(save_path, str(i))
+        sub_path = os.path.join(save_path, f'URL {i + 1}')
         yp.get_by_image_url(image_url, limit=limit, download_type=download_type, save_path=sub_path)
-        # parsed_links.put(image_url)
-    # data = yp.get_log_data()
-    # log_path.put(data)
+
+
+def parse_by_text_requests(
+        text_requests: list,
+        save_path: str,
+        limit: int = 200,
+        download_type: int = 2,
+        n_threads: int = 16,
+        kill_instances: bool = True,
+        chromedriver_path: str = 'chromedriver',
+        logger=Logger,
+        thread_id=0
+):
+    yp = YandexParser(chromedriver_path=chromedriver_path,
+                      kill_instances=kill_instances,
+                      n_threads=n_threads,
+                      logger=logger,
+                      thread_id=thread_id)
+    if not os.path.exists(save_path):
+        os.mkdir(save_path)
+    for i, text_request in enumerate(text_requests):
+        sub_path = os.path.join(save_path, str(text_request))
+        yp.get_by_text(text_request, sub_path, limit, download_type)

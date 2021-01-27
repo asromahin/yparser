@@ -68,12 +68,12 @@ class Downloader:
             self.logger.log(f'{e}, {url}', thread_id=self.thread_id)
             # pass
 
-    def download_images_sync(self, images_links, save_dir):
-        if not os.path.exists(save_dir):
-            os.mkdir(save_dir)
+    def download_images_sync(self, images_links, save_path, thread_id):
+        # if not os.path.exists(save_dir):
+        #     os.mkdir(save_dir)
         for i, image_link in (enumerate(images_links)):
-            save_path = os.path.join(save_dir, str(i) + '.jpg')
-            self.get_image_by_url(image_link, save_path)
+            # save_path = os.path.join(save_dir, str(i) + '.jpg')
+            self.get_image_by_url(image_link, save_path.format(thread_id, i + 1))
 
     def download_images(self, images_links, save_dir, download_type=0):
         if download_type == 0:
@@ -87,9 +87,9 @@ class Downloader:
             chunks = get_chunks(images_links, self.n_threads)
             threads = []
             for i, chunk in enumerate(chunks):
-                sub_path = os.path.join(save_dir, str(i))
+                sub_path = os.path.join(save_dir, '{}_{}.jpg')
                 if len(chunk) > 0:
-                    x = threading.Thread(target=self.download_images_sync, args=(chunk, sub_path))
+                    x = threading.Thread(target=self.download_images_sync, args=(chunk, sub_path, i + 1))
                     x.start()
                     threads.append(x)
             for thread in threads:

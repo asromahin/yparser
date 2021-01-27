@@ -1,4 +1,4 @@
-from api.paralel_parser import parse_paralel_by_images_urls
+from api.paralel_parser import parse_paralel_by_images_urls, parallel_parse_by_text_requests
 from api.parser import parse_by_images_urls
 import time
 
@@ -48,12 +48,27 @@ image_urls = [
     # 'https://mebel-alait.ru/gallery/kuhni-pryamye/10.jpg',
 ]
 
+text_requests = [
+    'счетчик газа',
+    'счетчик электричества',
+    'счетчик воды'
+]
+
 if __name__ == '__main__':
-    parse_paralel_by_images_urls(
-        image_urls=image_urls,
+    # parse_paralel_by_images_urls(
+    #     image_urls=image_urls,
+    #     save_path='data',
+    #     paralel_threads=2,
+    #     n_threads=32,
+    #     write_logger_to_txt=True,
+    #     show_progress=True
+    # )
+    parallel_parse_by_text_requests(
+        text_requests=text_requests,
         save_path='data',
-        paralel_threads=2,
+        limit=200,
         n_threads=32,
-        write_logger_to_txt=True,
+        parallel_threads=2,
+        write_logger_to_txt=False,
         show_progress=True
     )
