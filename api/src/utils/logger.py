@@ -63,9 +63,9 @@ class Logger:
                 print(v)
 
     @staticmethod
-    def write_logs_to_txt(log_dict):
+    def write_logs_to_txt(log_dict, log_file_name):
         print('Writing to txt...')
-        with open('log.txt', 'w') as file:
+        with open(log_file_name, 'w') as file:
             for k, v in log_dict.items():
                 if k != 'WorkTime':
                     file.write('*' * 60 + '\n')
@@ -99,7 +99,7 @@ class Logger:
             seconds = seconds if seconds >= 10 else str(0) + str(seconds)
             return f'{hours}:{minutes}:{seconds} h'
 
-    def end_logging(self, log_to_txt=False, log_to_console=True):
+    def end_logging(self, log_to_txt=False, log_file_name='log.txt', log_to_console=True):
         t1 = time.perf_counter()
         self.log_path.put(f'Logger working time: {self.convert_seconds(t1 - self.t0)}')
         log_dict = self.itemize_logs()
@@ -108,7 +108,7 @@ class Logger:
         if log_to_console:
             self.print_logs_to_console(log_dict)
         if log_to_txt:
-            self.write_logs_to_txt(log_dict)
+            self.write_logs_to_txt(log_dict, log_file_name)
 
     def print_progress_bar(self, bar_length):
         counter = 0

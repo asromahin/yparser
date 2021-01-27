@@ -51,6 +51,7 @@ def parse_paralel_by_images_urls(
         paralel_threads=2,
         chromedriver_path: str = 'chromedriver',
         write_logger_to_txt=False,
+        log_file_name='log.txt',
         show_progress=True
 ):
     if kill_instances:
@@ -86,7 +87,7 @@ def parse_paralel_by_images_urls(
         thread.join()
 
     if write_logger_to_txt:
-        logger.end_logging(log_to_txt=True)
+        logger.end_logging(log_to_txt=True, log_file_name=log_file_name)
     else:
         logger.end_logging()
 
@@ -101,6 +102,7 @@ def parallel_parse_by_text_requests(
         parallel_threads=2,
         chromedriver_path: str = 'chromedriver',
         write_logger_to_txt=False,
+        log_file_name='log.txt',
         show_progress=True
 ):
     if kill_instances:
@@ -136,6 +138,6 @@ def parallel_parse_by_text_requests(
         thread.join()
 
     if write_logger_to_txt:
-        logger.end_logging(log_to_txt=True)
+        logger.end_logging(log_to_txt=True, log_file_name=log_file_name)
     else:
         logger.end_logging()

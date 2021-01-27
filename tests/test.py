@@ -55,20 +55,22 @@ text_requests = [
 ]
 
 if __name__ == '__main__':
-    # parse_paralel_by_images_urls(
-    #     image_urls=image_urls,
-    #     save_path='data',
-    #     paralel_threads=2,
-    #     n_threads=32,
-    #     write_logger_to_txt=True,
-    #     show_progress=True
-    # )
+    parse_paralel_by_images_urls(
+        image_urls=image_urls,
+        save_path='data',
+        paralel_threads=2,
+        n_threads=32,
+        write_logger_to_txt=True,
+        log_file_name='log_urls.txt',
+        show_progress=True
+    )
     parallel_parse_by_text_requests(
         text_requests=text_requests,
         save_path='data',
         limit=200,
         n_threads=32,
         parallel_threads=2,
-        write_logger_to_txt=False,
+        write_logger_to_txt=True,
+        log_file_name='log_text_requests.txt',
         show_progress=True
     )
