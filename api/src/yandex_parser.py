@@ -67,6 +67,7 @@ class YandexParser:
         last_len = 0
         self.logger.log('Start scrolling page with images', thread_id=self.thread_id)
         res_images = []
+        counter = 0
         while len(res_images) <= limit:
             # imgs = self.wd.find_elements_by_class_name('serp-item__thumb')
             imgs = WebDriverWait(self.wd, 5).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'serp'
@@ -76,14 +77,17 @@ class YandexParser:
             if last_len == len(imgs):
                 try:
                     self.logger.log(len(res_images), thread_id=self.thread_id)
-                    elem = self.wd.find_element_by_class_name('button2_size_l')  # [-1].click()
+                    # elem = self.wd.find_element_by_class_name('button2_size_l')  # [-1].click()
                     for im in imgs:
-                        res_images.append(self.get_image_link(im))
-                    self.set_url(elem.get_attribute('href'))
+                        if self.get_image_link(im) not in res_images:
+                            res_images.append(self.get_image_link(im))
+                    # self.set_url(elem.get_attribute('href'))
+                    self.wd.execute_script("window.scrollTo(0, {}000)".format(counter + 1))
                 except BaseException as e:
                     self.logger.log(e, thread_id=self.thread_id)
                     break
             last_len = len(imgs)
+            counter += 1
         self.logger.log('End scrolling page with images', thread_id=self.thread_id)
         return res_images
 

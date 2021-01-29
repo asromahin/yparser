@@ -67,9 +67,9 @@ if __name__ == '__main__':
     parallel_parse_by_text_requests(
         text_requests=text_requests,
         save_path='data',
-        limit=200,
-        n_threads=32,
-        parallel_threads=2,
+        limit=500,
+        n_threads=64,
+        parallel_threads=3,
         write_logger_to_txt=True,
         log_file_name='log_text_requests.txt',
         show_progress=True
