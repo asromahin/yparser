@@ -9,15 +9,17 @@ def parse_paralel_by_images(
         image_paths: list,
         save_path: str,
         limit: int = 200,
-        download_type: int = 2,
+        download: bool = True,
         n_threads: int = 16,
         kill_instances: bool = True,
         paralel_threads=2,
+        prefix='',
+        recursive=False,
+        recursive_limit=10,
 ):
     if kill_instances:
         kill_chrome_instances()
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
+    os.mkdir(save_path)
     chunks = get_chunks(image_paths, paralel_threads)
     threads = []
     for i, chunk in enumerate(chunks):
@@ -26,9 +28,12 @@ def parse_paralel_by_images(
             chunk,
             sub_path,
             limit,
-            download_type,
+            download,
             n_threads,
             False,
+            prefix,
+            recursive,
+            recursive_limit,
         ))
         x.start()
         threads.append(x)
@@ -40,15 +45,17 @@ def parse_paralel_by_images_urls(
         image_urls: list,
         save_path: str,
         limit: int = 200,
-        download_type: int = 2,
+        download: bool = True,
         n_threads: int = 16,
         kill_instances: bool = True,
         paralel_threads=2,
+        prefix='',
+        recursive=False,
+        recursive_limit=10,
 ):
     if kill_instances:
         kill_chrome_instances()
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
+    os.mkdir(save_path)
     chunks = get_chunks(image_urls, paralel_threads)
     threads = []
     for i, chunk in enumerate(chunks):
@@ -57,9 +64,13 @@ def parse_paralel_by_images_urls(
             chunk,
             sub_path,
             limit,
-            download_type,
+            download,
             n_threads,
             False,
+            prefix,
+            recursive,
+            recursive_limit,
+
         ))
         x.start()
         threads.append(x)

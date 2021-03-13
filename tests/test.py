@@ -1,4 +1,5 @@
 from yparser.api.paralel_parser import parse_paralel_by_images_urls
+from yparser.api.parser import parse_by_images_urls
 
 image_urls = [
     'https://kupi-plitu.ru/upload/iblock/b72/b7299f247cb043ad89e6462cfc571c73.jpg',
@@ -46,10 +47,10 @@ image_urls = [
     'https://mebel-alait.ru/gallery/kuhni-pryamye/10.jpg',
 ]
 
-parse_paralel_by_images_urls(
+parse_by_images_urls(
     image_urls=image_urls,
     save_path='data',
-    paralel_threads=2,
+    #paralel_threads=2,
     n_threads=32,
 )
 

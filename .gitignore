@@ -6,6 +6,6 @@
 *.tiff
 *.webp
 
-/data
+/stash_data/kaggle_leafs/data
 /clean_data
 /stash_data

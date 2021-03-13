@@ -73,11 +73,10 @@ class YandexParser:
         self.log('end scroll page with images')
         return res_images
 
-    def get_images_by_links(self, images, save_path, download_type=0):
-        if not os.path.exists(save_path):
-            os.mkdir(save_path)
+    def get_images_by_links(self, images, save_path):
         self.log('start grab images')
-        self.downloader.download_images(images, save_dir=save_path, download_type=download_type)
+        images = list(set(images))
+        self.downloader.download_images(images, save_dir=save_path)
         self.log('end grab images')
 
     def get_by_text(self, text):
@@ -119,7 +118,7 @@ class YandexParser:
         time.sleep(1)
 
     @skip_error
-    def get_by_image(self, image_path, save_path, limit=200, download_type=True):
+    def get_by_image(self, image_path, save_path, limit=200, download=True):
         self.to_navigation()
         self.log(f'download image from {image_path}')
         target_panel = self.wd.find_element_by_class_name('cbir-panel__file-input')
@@ -129,10 +128,12 @@ class YandexParser:
         self.to_image_list()
         self.log('go to page')
         images = self.get_links_to_images(limit)
-        self.get_images_by_links(images, save_path=save_path, download_type=download_type)
+        if download:
+            self.get_images_by_links(images, save_path=save_path)
+        return images
 
     @skip_error
-    def get_by_image_url(self, image_url, save_path, save_screen='screenshot.png', limit=200, download_type=True):
+    def get_by_image_url(self, image_url, save_path, save_screen='screenshot.png', limit=200, download=True):
         self.to_navigation()
         self.log(f'set image url {image_url}')
         cur_elem = self.wd.find_element_by_class_name('cbir-panel__input')
@@ -148,5 +149,7 @@ class YandexParser:
         #self.wd.save_screenshot('test.png')
         self.to_image_list()
         images = self.get_links_to_images(limit)
-        self.get_images_by_links(images, save_path=save_path, download_type=download_type)
+        if download:
+            self.get_images_by_links(images, save_path=save_path)
+        return images
 
