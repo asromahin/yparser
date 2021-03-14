@@ -4,6 +4,7 @@ import urllib
 import urllib.request
 import os
 import uuid
+import time
 
 
 from yparser.src.downloader.messages import CorrectSaveMessage, IncorrectSaveMessage
@@ -30,11 +31,11 @@ class Downloader(threading.Thread):
             try:
                 save_path = self.download_file(url)
                 if self.stats_queue is not None:
-                    message = CorrectSaveMessage(url=url, save_path=save_path)
+                    message = CorrectSaveMessage(timestamp=int(time.time()), url=url, save_path=save_path)
                     self.stats_queue.put(message)
             except BaseException as e:
                 if self.stats_queue is not None:
-                    message = IncorrectSaveMessage(url=url, error=e)
+                    message = IncorrectSaveMessage(timestamp=int(time.time()), url=url, error=e)
                     self.stats_queue.put(message)
 
             # Отправляем сигнал о том, что задача завершена

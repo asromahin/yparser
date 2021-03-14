@@ -7,11 +7,12 @@ from yparser.src.downloader.downloader import DownloaderManager
 
 
 class YandexParser(threading.Thread):
-    def __init__(self, queue: Queue, download_manager: DownloaderManager):
+    def __init__(self, queue: Queue, download_manager: DownloaderManager, limit=200):
         threading.Thread.__init__(self)
         self.wd = utils.init_wd()
         self.url = ''
         self.queue = queue
+        self.limit = limit
         self.download_manager = download_manager
 
     def run(self):
@@ -47,18 +48,18 @@ class YandexParser(threading.Thread):
                 url = '/'.join(url)
                 return url
 
-    def get_links_to_images(self, limit=200):
+    def get_links_to_images(self):
         last_len = 0
         res_images = []
-        while len(res_images) < limit:
+        while len(res_images) < self.limit:
             imgs = self.wd.find_elements_by_class_name('serp-item__thumb')
             time.sleep(1)
             imgs = self.wd.find_elements_by_class_name('serp-item__link')
             if last_len == len(imgs):
                 try:
                     elem = self.wd.find_element_by_class_name('button2_size_l')#[-1].click()
-                    for im in imgs:
-                        res_images.append(self.get_image_link(im))
+                    imgs = [self.get_image_link(img) for img in imgs]
+                    self.get_images_by_links(imgs)
                     self.set_url(elem.get_attribute('href'))
                 except BaseException as e:
                     break
@@ -103,18 +104,16 @@ class YandexParser(threading.Thread):
             seconds += 1
         time.sleep(1)
 
-    def get_by_image(self, image_path, limit=200, download=True):
+    def get_by_image(self, image_path, limit=200):
         self.to_navigation()
         target_panel = self.wd.find_element_by_class_name('cbir-panel__file-input')
         utils.drag_and_drop_file(target_panel, image_path)
         self.wait_load_page()
         self.to_image_list()
-        images = self.get_links_to_images(limit)
-        if download:
-            self.get_images_by_links(images)
+        images = self.get_links_to_images()
         return images
 
-    def get_by_image_url(self, image_url, limit=200, download=True):
+    def get_by_image_url(self, image_url, limit=200):
         self.to_navigation()
         cur_elem = self.wd.find_element_by_class_name('cbir-panel__input')
         target_panel = cur_elem.find_element_by_class_name('input__control')
@@ -125,9 +124,7 @@ class YandexParser(threading.Thread):
         cur_elem.find_element_by_class_name('cbir-panel__search-button').click()
         time.sleep(5)
         self.to_image_list()
-        images = self.get_links_to_images(limit)
-        if download:
-            self.get_images_by_links(images)
+        images = self.get_links_to_images()
         return images
 
 

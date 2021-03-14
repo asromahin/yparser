@@ -1,10 +1,9 @@
 from dataclasses import dataclass
-import time
 
 
+@dataclass
 class Message:
-    def __init__(self):
-        self.timestamp = int(time.time())
+    timestamp: int
 
 
 @dataclass
