@@ -208,6 +208,6 @@ image_urls = list(set(image_urls))
 SAVE_PATH = 'D://datasets/test_parser'
 
 
-DM = DownloaderManager(SAVE_PATH, n_workers=16)
-YPM = YandexParserManager(DM, n_workers=2)
+DM = DownloaderManager(SAVE_PATH, n_workers=48)
+YPM = YandexParserManager(DM, n_workers=4)
 YPM.parse(links=image_urls)

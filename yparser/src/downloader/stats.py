@@ -1,6 +1,7 @@
 from queue import Queue
 import threading
 import sys
+import numpy as np
 
 from yparser.src.downloader.messages import CorrectSaveMessage, IncorrectSaveMessage
 
@@ -14,6 +15,7 @@ class DownloaderStats(threading.Thread):
         self.speed = 0
         self.bad_urls = []
         self.first_message = None
+        self.queue_size = 0
 
     def run(self):
         """Запуск потока"""
@@ -32,8 +34,8 @@ class DownloaderStats(threading.Thread):
     def read_message(self, message):
         diff_timestamp = message.timestamp - self.first_message.timestamp
         if diff_timestamp != 0:
-            self.speed = self.num_corrects / diff_timestamp
-
+            self.speed = (self.num_corrects + self.num_errors) / diff_timestamp
+        self.queue_size = message.len_queue
         if isinstance(message, CorrectSaveMessage):
             self.num_corrects += 1
         if isinstance(message, IncorrectSaveMessage):
@@ -41,6 +43,6 @@ class DownloaderStats(threading.Thread):
             self.num_errors += 1
 
     def print(self):
-        sys.stdout.write(f"\rcorrrects={self.num_corrects}\twith errors={self.num_errors}\tspeed={self.speed}")
+        sys.stdout.write(f"\rcorrrects={self.num_corrects}\twith errors={self.num_errors}\tspeed={np.round(self.speed, 2)}\tqueue_size={self.queue_size}")
 
 

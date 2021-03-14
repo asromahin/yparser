@@ -3,16 +3,16 @@ from dataclasses import dataclass
 
 @dataclass
 class Message:
+    url: str
     timestamp: int
+    len_queue: int
 
 
 @dataclass
 class CorrectSaveMessage(Message):
-    url: str
     save_path: str
 
 
 @dataclass
 class IncorrectSaveMessage(Message):
-    url: str
     error: BaseException
