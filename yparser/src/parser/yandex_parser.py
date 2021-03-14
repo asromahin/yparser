@@ -129,10 +129,10 @@ class YandexParser(threading.Thread):
 
 
 class YandexParserManager:
-    def __init__(self, downloader_manager: DownloaderManager, n_workers=1):
+    def __init__(self, downloader_manager: DownloaderManager, n_workers=1, limit=200):
         self.queue = Queue()
         for i in range(n_workers):
-            t = YandexParser(self.queue, downloader_manager)
+            t = YandexParser(self.queue, downloader_manager, limit=limit)
             t.setDaemon(True)
             t.start()
 

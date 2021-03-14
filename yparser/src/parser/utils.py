@@ -1,5 +1,4 @@
-import requests
-from yparser.src.consts import CHROMEDRIVER_PATH
+from webdriver_manager.chrome import ChromeDriverManager
 from yparser.src.utils.js_code import JS_DROP_FILE
 from selenium import webdriver
 
@@ -13,7 +12,7 @@ def init_wd(headless=True):
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
-    wd = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, chrome_options=chrome_options)
+    wd = webdriver.Chrome(executable_path=ChromeDriverManager().install(), chrome_options=chrome_options)
     return wd
 
 
