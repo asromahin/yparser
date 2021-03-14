@@ -1,4 +1,4 @@
-/.idea
+/old/.idea
 *.log
 *__pycache__*
 *.png

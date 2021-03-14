@@ -1,5 +1,5 @@
-from yparser.api.paralel_parser import parse_paralel_by_images_urls
-from yparser.api.src.clean import full_clean
+from yparser.src.downloader.downloader import DownloaderManager
+from yparser.src.parser.yandex_parser import YandexParserManager
 
 image_urls = [
     'https://nekto.me/images/505000/60/photos/p_e66a311a08.jpg',
@@ -205,21 +205,9 @@ image_urls = [
 ]
 image_urls = list(set(image_urls))
 
-SAVE_PATH = 'D://datasets/WebCamHeadsets'
+SAVE_PATH = 'D://datasets/test_parser'
 
-parse_paralel_by_images_urls(
-    image_urls=image_urls,
-    save_path=SAVE_PATH,
-    paralel_threads=2,
-    n_threads=32,
-    limit=300,
-    recursive=False,
-    recursive_limit=5,
-    prefix='extend',
-)
 
-"""clean_data(
-    method='phash',
-    source_path=SAVE_PATH,
-    threshold=5,
-)"""
+DM = DownloaderManager(SAVE_PATH, n_workers=16)
+YPM = YandexParserManager(DM, n_workers=2)
+YPM.parse(links=image_urls)
