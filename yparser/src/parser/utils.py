@@ -3,6 +3,7 @@ from selenium import webdriver
 
 from yparser.src.parser.js_code import JS_DROP_FILE
 from yparser.src.consts import IN_COLAB
+from yparser.src.utils.colab_downloader import download_incolab_chromedriver
 
 
 def init_wd(headless=True):
@@ -15,6 +16,7 @@ def init_wd(headless=True):
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
     if IN_COLAB:
+        download_incolab_chromedriver()
         wd = webdriver.Chrome('chromedriver', chrome_options=chrome_options)
     else:
         wd = webdriver.Chrome(executable_path=ChromeDriverManager().install(), chrome_options=chrome_options)
