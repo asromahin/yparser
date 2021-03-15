@@ -1,8 +1,8 @@
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
 
-from src.parser.js_code import JS_DROP_FILE
-from src.consts import IN_COLAB
+from yparser.src.parser.js_code import JS_DROP_FILE
+from yparser.src.consts import IN_COLAB
 
 
 def init_wd(headless=True):
