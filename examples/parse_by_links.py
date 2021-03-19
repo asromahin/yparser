@@ -1,6 +1,4 @@
-from yparser.src.downloader.downloader import DownloaderManager
-from yparser.src.parser.yandex_parser import YandexParserManager
-
+from yparser.parser import YParser
 image_urls = [
     'https://nekto.me/images/505000/60/photos/p_e66a311a08.jpg',
     'http://ww.zapilili.ru/pic/1/1/4/real_people_looking_and_acting_really_weird_03981_049.jpg',
@@ -205,9 +203,15 @@ image_urls = [
 ]
 image_urls = list(set(image_urls))
 
-SAVE_PATH = 'D://datasets/test_parser'
+SAVE_PATH = 'D://datasets'
 
 
-DM = DownloaderManager(SAVE_PATH, n_workers=48)
-YPM = YandexParserManager(DM, n_workers=4)
-YPM.parse(links=image_urls)
+parser = YParser(
+    name='webcamheadsets_recurse_test',
+    save_folder=SAVE_PATH,
+    download_workers=32,
+    parser_workers=4,
+    limits=[5, 100],
+    wandb_log=True,
+)
+parser.parse(links=image_urls)

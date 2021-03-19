@@ -1,11 +1,7 @@
-/old/.idea
+.idea
 *.log
 *__pycache__*
 *.png
 *.jpg
 *.tiff
 *.webp
-
-/stash_data/kaggle_leafs/data
-/clean_data
-/stash_data

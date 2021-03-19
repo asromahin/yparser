@@ -7,19 +7,20 @@ import uuid
 import time
 
 
-from yparser.src.downloader.messages import CorrectSaveMessage, IncorrectSaveMessage
-from yparser.src.downloader.stats import DownloaderStats
+from src.logger.messages import CorrectSaveMessage, IncorrectSaveMessage
+from src.logger.logger import Logger
 
 
 class Downloader(threading.Thread):
     """Потоковый загрузчик файлов"""
 
-    def __init__(self, queue, save_folder, stats_queue=None):
+    def __init__(self, queue, save_folder, logger=None):
         """Инициализация потока"""
         threading.Thread.__init__(self)
+        self.id = str(uuid.uuid4())
         self.queue = queue
         self.save_folder = save_folder
-        self.stats_queue = stats_queue
+        self.logger = logger
 
     def run(self):
         """Запуск потока"""
@@ -30,23 +31,25 @@ class Downloader(threading.Thread):
             # Скачиваем файл
             try:
                 save_path = self.download_file(url)
-                if self.stats_queue is not None:
+                if self.logger is not None:
                     message = CorrectSaveMessage(
+                        id=self.id,
                         timestamp=int(time.time()),
                         url=url,
                         save_path=save_path,
                         len_queue=self.queue.qsize(),
                     )
-                    self.stats_queue.put(message)
+                    self.logger.queue.put(message)
             except BaseException as e:
-                if self.stats_queue is not None:
+                if self.logger is not None:
                     message = IncorrectSaveMessage(
+                        id=self.id,
                         timestamp=int(time.time()),
                         url=url,
                         error=e,
                         len_queue=self.queue.qsize(),
                     )
-                    self.stats_queue.put(message)
+                    self.logger.queue.put(message)
 
             # Отправляем сигнал о том, что задача завершена
             self.queue.task_done()
@@ -68,21 +71,14 @@ class Downloader(threading.Thread):
 
 
 class DownloaderManager:
-    def __init__(self, save_folder, n_workers, show_stats=True):
+    def __init__(self, save_folder, n_workers, logger=None):
         self.save_folder = save_folder
-        self.show_stats = show_stats
-        if self.show_stats:
-            self.downloader_stats = DownloaderStats()
-            self.downloader_stats.setDaemon(True)
-            self.downloader_stats.start()
+        self.logger = logger
         os.makedirs(self.save_folder, exist_ok=True)
         self.n_workers = n_workers
         self.links_queue = Queue()
         for i in range(n_workers):
-            if self.show_stats:
-                t = Downloader(self.links_queue, save_folder=self.save_folder, stats_queue=self.downloader_stats.stats_queue)
-            else:
-                t = Downloader(self.links_queue, save_folder=self.save_folder)
+            t = Downloader(self.links_queue, save_folder=self.save_folder, logger=self.logger)
             t.setDaemon(True)
             t.start()
 
