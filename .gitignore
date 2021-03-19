@@ -1,6 +1,5 @@
-/.idea
+.idea
 *.log
-/data
 *__pycache__*
 *.png
 *.jpg
