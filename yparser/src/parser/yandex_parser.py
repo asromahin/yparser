@@ -1,64 +1,60 @@
 import time
-import threading
 from queue import Queue
 
+from src.pool import PoolInstance, Pool
 from src.parser import utils
-from src.downloader.downloader import DownloaderManager
+from src.downloader.downloader import DownloaderPool
 from src.logger.messages import CorrectParseMessage, IncorrectParseMessage, CurrentStateScreenshotMessage
-import uuid
+
 from PIL import Image
 import numpy as np
 import io
 
 
-class YandexParser(threading.Thread):
-    def __init__(self, queue: Queue, download_manager: DownloaderManager, limits=[200], parse_type='url', logger=None):
-        threading.Thread.__init__(self)
-        self.id = str(uuid.uuid4())
+class Link:
+    def __init__(self, link, recurse_level):
+        self.link = link
+        self.recurse_level = recurse_level
+
+
+class YandexParser(PoolInstance):
+    def __init__(self, input_queue: Queue, output_queue: Queue = None, logger_queue: Queue = None, limits=[200], parse_type='url'):
+        super(YandexParser, self).__init__(input_queue, output_queue, logger_queue)
         self.wd = utils.init_wd()
-        self.url = ''
-        self.queue = queue
         self.limits = limits
-        self.download_manager = download_manager
         self.parse_type = parse_type
-        self.logger = logger
+
+        self.url = ''
         self.link: Link = None
 
-    def run(self):
-        """Запуск потока"""
-        while True:
-            # Получаем url из очереди
-            link = self.queue.get()
-            self.link = link
+    def run_func(self, link: Link):
+        self.link = link
 
-            # Скачиваем файл
-            try:
-                if self.parse_type == 'url':
-                    parsed_links = self.get_by_image_url(link.link)
-                elif self.parse_type == 'path':
-                    parsed_links = self.get_by_image(link.link)
-                else:
-                    parsed_links = []
-                message = CorrectParseMessage(
-                    id=self.id,
-                    url=link.link,
-                    timestamp=int(time.time()),
-                    len_queue=self.queue.qsize(),
-                    parsed=parsed_links,
-                )
-                self.logger.queue.put(message)
-            except BaseException as e:
-                message = IncorrectParseMessage(
-                    id=self.id,
-                    url=link.link,
-                    timestamp=int(time.time()),
-                    len_queue=self.queue.qsize(),
-                    error=e,
-                )
-                self.logger.queue.put(message)
-
-            # Отправляем сигнал о том, что задача завершена
-            self.queue.task_done()
+        # Скачиваем файл
+        try:
+            if self.parse_type == 'url':
+                parsed_links = self.get_by_image_url(link.link)
+            elif self.parse_type == 'path':
+                parsed_links = self.get_by_image(link.link)
+            else:
+                parsed_links = []
+            message = CorrectParseMessage(
+                id=self.id,
+                url=link.link,
+                timestamp=int(time.time()),
+                len_queue=self.input_queue.qsize(),
+                parsed=parsed_links,
+            )
+            self.logger_queue.put(message)
+        except BaseException as e:
+            message = IncorrectParseMessage(
+                id=self.id,
+                url=link.link,
+                timestamp=int(time.time()),
+                len_queue=self.input_queue.qsize(),
+                error=e,
+            )
+            self.logger_queue.put(message)
 
     def set_url(self, url):
         self.url = url
@@ -75,10 +71,10 @@ class YandexParser(threading.Thread):
             id=self.id,
             url=self.url,
             timestamp=int(time.time()),
-            len_queue=self.queue.qsize(),
+            len_queue=self.input_queue.qsize(),
             screenshot=screenshot,
         )
-        self.logger.queue.put(message)
+        self.logger_queue.put(message)
 
     def get_image_link(self, elem):
         url = elem.get_attribute('href')
@@ -103,6 +99,9 @@ class YandexParser(threading.Thread):
                 try:
                     elem = self.wd.find_element_by_class_name('button2_size_l')#[-1].click()
                     imgs = [self.get_image_link(img) for img in imgs]
+                    if len(res_images) + len(imgs) >= self.limits[self.link.recurse_level]:
+                        dif = len(res_images) + len(imgs) - self.limits[self.link.recurse_level]
+                        imgs = imgs[:-dif]
                     res_images += imgs
                     self.get_images_by_links(imgs)
                     self.set_url(elem.get_attribute('href'))
@@ -113,10 +112,12 @@ class YandexParser(threading.Thread):
 
     def get_images_by_links(self, images):
         images = list(set(images))
-        self.download_manager.push_links(images)
+        if self.output_queue is not None:
+            for image in images:
+                self.output_queue.put(image)
         if self.link.recurse_level < len(self.limits)-1:
             for image in images:
-                self.queue.put(Link(link=image, recurse_level=self.link.recurse_level+1))
+                self.input_queue.put(Link(link=image, recurse_level=self.link.recurse_level+1))
 
     def get_by_text(self, text):
         url = "https://yandex.ru/images/search?from=tabbar&text={}".format(text.replace(' ', '%20'))
@@ -179,23 +180,17 @@ class YandexParser(threading.Thread):
         return images
 
 
-class YandexParserManager:
-    def __init__(self, downloader_manager: DownloaderManager, n_workers=1, limits=[200], parse_type='url', logger=None):
-        self.queue = Queue()
-        self.logger = logger
-        for i in range(n_workers):
-            t = YandexParser(self.queue, downloader_manager, limits=limits, parse_type=parse_type, logger=self.logger)
-            t.setDaemon(True)
-            t.start()
+class YandexParserPool(Pool):
+    def __init__(self, n_workers=1, limits=[200], parse_type='url', output_queue=None, logger_queue=None):
+        super(YandexParserPool, self).__init__(
+            output_queue=output_queue,
+            pool_instance=YandexParser,
+            n_workers=n_workers,
+            limits=limits,
+            parse_type=parse_type,
+            logger_queue=logger_queue,
+        )
 
-    def parse(self, links, wait_parse=True):
+    def parse(self, links):
         for link in links:
-            self.queue.put(Link(link=link, recurse_level=0))
-        if wait_parse:
-            self.queue.join()
-
-
-class Link:
-    def __init__(self, link, recurse_level):
-        self.link = link
-        self.recurse_level = recurse_level
+            self.input_queue.put(Link(link=link, recurse_level=0))
