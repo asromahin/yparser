@@ -1,6 +1,6 @@
 import os
 
-from backend.pool import Pool, PoolInstance
+from yparser.src.pool import Pool, PoolInstance
 
 
 class Hasher(PoolInstance):

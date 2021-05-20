@@ -1,10 +1,10 @@
 import time
 from queue import Queue
 
-from backend.pool import PoolInstance, Pool
-from backend.parser import utils
-from backend.downloader.downloader import DownloaderPool
-from backend.logger.messages import CorrectParseMessage, IncorrectParseMessage, CurrentStateScreenshotMessage
+from yparser.src.pool import PoolInstance, Pool
+from yparser.src.parser import utils
+from yparser.src.downloader.downloader import DownloaderPool
+from yparser.src.logger.messages import CorrectParseMessage, IncorrectParseMessage, CurrentStateScreenshotMessage
 
 from PIL import Image
 import numpy as np

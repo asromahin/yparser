@@ -1,9 +1,9 @@
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
 
-from backend.parser.js_code import JS_DROP_FILE
-from backend.consts import IN_COLAB
-from backend.utils.colab_downloader import download_incolab_chromedriver
+from yparser.src.parser.js_code import JS_DROP_FILE
+from yparser.src.consts import IN_COLAB
+from yparser.src.utils.colab_downloader import download_incolab_chromedriver
 
 
 def init_wd(headless=True):

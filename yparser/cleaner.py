@@ -1,4 +1,4 @@
-from backend.cleaner.hasher import HasherPool
+from yparser.src.cleaner.hasher import HasherPool
 
 
 class Cleaner:
