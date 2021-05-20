@@ -207,11 +207,11 @@ SAVE_PATH = 'D://datasets'
 
 
 parser = YParser(
-    name='webcamheadsets_recurse_test',
+    name='app_test',
     save_folder=SAVE_PATH,
-    download_workers=48,
-    parser_workers=4,
+    download_workers=16,
+    parser_workers=3,
     limits=[20, 200],
-    wandb_log=True,
+    wandb_log=False,
 )
 parser.parse(links=image_urls)

@@ -72,7 +72,7 @@ class Logger(threading.Thread):
         if isinstance(message, IncorrectParseMessage):
             self.log_data['parse_incorrects'] += 1
 
-        if isinstance(message, CurrentStateScreenshotMessage):
+        if isinstance(message, CurrentStateScreenshotMessage) and self.wandb_log:
             wandb.log({message.id: [wandb.Image(message.screenshot, caption=message.id)]})
 
     def print(self):
