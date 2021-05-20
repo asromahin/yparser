@@ -1,7 +1,7 @@
 import subprocess
 import os
 
-from yparser.src.consts import IN_COLAB
+from src.backend.consts import IN_COLAB
 
 
 def download_incolab_chromedriver():

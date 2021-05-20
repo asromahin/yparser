@@ -7,8 +7,8 @@ import uuid
 import time
 
 
-from src.pool import Pool, PoolInstance
-from src.logger.messages import CorrectSaveMessage, IncorrectSaveMessage
+from backend.pool import Pool, PoolInstance
+from backend.logger.messages import CorrectSaveMessage, IncorrectSaveMessage
 
 
 class Downloader(PoolInstance):

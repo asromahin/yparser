@@ -1,9 +1,9 @@
 import wandb
 import os
 
-from src.downloader.downloader import DownloaderPool
-from src.parser.yandex_parser import YandexParserPool
-from src.logger.logger import Logger
+from backend.downloader.downloader import DownloaderPool
+from backend.parser.yandex_parser import YandexParserPool
+from backend.logger.logger import Logger
 
 
 class YParser:

@@ -6,7 +6,7 @@ import wandb
 import time
 from collections import defaultdict
 
-from src.logger.messages import (
+from backend.logger.messages import (
     CorrectSaveMessage,
     IncorrectSaveMessage,
     CorrectParseMessage,

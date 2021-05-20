@@ -1,6 +1,6 @@
 import os
 
-from src.pool import Pool, PoolInstance
+from backend.pool import Pool, PoolInstance
 
 
 class Hasher(PoolInstance):

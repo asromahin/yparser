@@ -1,4 +1,4 @@
-from yparser.parser import YParser
+from src.parser import YParser
 image_urls = [
     'https://nekto.me/images/505000/60/photos/p_e66a311a08.jpg',
     'http://ww.zapilili.ru/pic/1/1/4/real_people_looking_and_acting_really_weird_03981_049.jpg',
