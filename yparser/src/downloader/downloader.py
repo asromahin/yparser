@@ -45,7 +45,7 @@ class Downloader(PoolInstance):
 
     def download_file(self, url):
         """Скачиваем файл"""
-        handle = urllib.request.urlopen(url)
+        handle = urllib.request.urlopen(url, timeout=5)
         fname = str(uuid.uuid4()) + '.jpg'
         fname = os.path.join(self.save_folder, fname)
 
@@ -70,7 +70,3 @@ class DownloaderPool(Pool):
             save_folder=save_folder,
             logger_queue=logger_queue,
         )
-
-    def push_links(self, links):
-        for link in links:
-            self.queue.put(link)

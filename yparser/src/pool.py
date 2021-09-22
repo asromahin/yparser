@@ -31,6 +31,6 @@ class Pool:
         self.output_queue = output_queue
         self.logger_queue = logger_queue
         for i in range(n_workers):
-            t = pool_instance(input_queue=self.input_queue, output_queue=self.output_queue, logger_queue=logger_queue, *args, **kwargs)
+            t = pool_instance(input_queue=self.input_queue, output_queue=self.output_queue, logger_queue=self.logger_queue, *args, **kwargs)
             t.setDaemon(True)
             t.start()

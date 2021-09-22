@@ -26,6 +26,8 @@ class Logger(threading.Thread):
         self.log_data = defaultdict(lambda: 0)
         if self.wandb_log:
             self.wandb_timestamp = time.time()
+        self.df = []
+        self.save_df = []
 
     def run(self):
         """Запуск потока"""
@@ -64,16 +66,21 @@ class Logger(threading.Thread):
 
         if isinstance(message, CorrectSaveMessage):
             self.log_data['downloads_corrects'] += 1
+            self.save_df.append({'url': message.url, 'save_path': message.save_path})
         if isinstance(message, IncorrectSaveMessage):
             self.log_data['downloads_incorrects'] += 1
 
         if isinstance(message, CorrectParseMessage):
             self.log_data['parse_corrects'] += 1
+            for parse in message.parsed:
+                self.df.append({'query_url': message.url, 'url': parse})
         if isinstance(message, IncorrectParseMessage):
             self.log_data['parse_incorrects'] += 1
 
         if isinstance(message, CurrentStateScreenshotMessage) and self.wandb_log:
             wandb.log({message.id: [wandb.Image(message.screenshot, caption=message.id)]})
+
+        #self.log_data['logger_size'] = self.queue.qsize()
 
     def print(self):
         res_str = '\r'

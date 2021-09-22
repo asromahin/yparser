@@ -1,5 +1,6 @@
 import wandb
 import os
+import pandas as pd
 
 from yparser.src.downloader.downloader import DownloaderPool
 from yparser.src.parser.yandex_parser import YandexParserPool
@@ -20,13 +21,13 @@ class YParser:
     ):
         if wandb_log:
             wandb.init(project=wandb_project, name=name, reinit=True)
-        save_path = os.path.join(save_folder, name)
+        self.save_path = os.path.join(save_folder, name)
         self.logger = Logger(wandb_log=wandb_log)
         self.logger.setDaemon(True)
         self.logger.start()
         self.dm = DownloaderPool(
             n_workers=download_workers,
-            save_folder=save_path,
+            save_folder=self.save_path,
             logger_queue=self.logger.queue,
         )
         self.ypm = YandexParserPool(
@@ -39,7 +40,18 @@ class YParser:
 
     def parse(self, links):
         self.ypm.parse(links=links)
+        #print('start')
         self.ypm.input_queue.join()
-        self.dm.input_queue.join()
-        self.logger.queue.join()
+        #print('end parser')
+        #print(self.dm.input_queue.qsize())
+        if not self.dm.input_queue.empty():
+            self.dm.input_queue.join()
+        #print('end downloader')
+        if not self.logger.queue.empty():
+            self.logger.queue.join()
+        #print('end logger')
+        df1 = pd.DataFrame(self.logger.df)
+        df2 = pd.DataFrame(self.logger.save_df)
+        df = pd.merge(df1, df2, on='url', how='inner')
+        df.to_csv(os.path.join(self.save_path, 'link.csv'), index=False)
 

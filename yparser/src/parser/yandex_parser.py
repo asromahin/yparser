@@ -36,6 +36,8 @@ class YandexParser(PoolInstance):
                 parsed_links = self.get_by_image_url(link.link)
             elif self.parse_type == 'path':
                 parsed_links = self.get_by_image(link.link)
+            elif self.parse_type == 'text':
+                parsed_links = self.get_by_text(link.link)
             else:
                 parsed_links = []
             message = CorrectParseMessage(
@@ -54,6 +56,7 @@ class YandexParser(PoolInstance):
                 len_queue=self.input_queue.qsize(),
                 error=e,
             )
+            print(e)
             self.logger_queue.put(message)
 
     def set_url(self, url):
@@ -90,22 +93,30 @@ class YandexParser(PoolInstance):
 
     def get_links_to_images(self):
         last_len = 0
+        #counter = 0
         res_images = []
         while len(res_images) < self.limits[self.link.recurse_level]:
-            imgs = self.wd.find_elements_by_class_name('serp-item__thumb')
-            time.sleep(1)
+            #imgs = self.wd.find_elements_by_class_name('serp-item__thumb')
+            #time.sleep(1)
             imgs = self.wd.find_elements_by_class_name('serp-item__link')
+            #print(len(imgs))
             if last_len == len(imgs):
                 try:
-                    elem = self.wd.find_element_by_class_name('button2_size_l')#[-1].click()
+                    elem = self.wd.find_elements_by_class_name('button2_size_l')[-1]#[-1].click()
                     imgs = [self.get_image_link(img) for img in imgs]
                     if len(res_images) + len(imgs) >= self.limits[self.link.recurse_level]:
                         dif = len(res_images) + len(imgs) - self.limits[self.link.recurse_level]
                         imgs = imgs[:-dif]
                     res_images += imgs
+                    #self.wd.save_screenshot("test_"+str(counter)+'.png')
+                    #counter += 1
                     self.get_images_by_links(imgs)
-                    self.set_url(elem.get_attribute('href'))
+                    href = elem.get_attribute('href')
+                    #print(href)
+                    self.set_url(href)
+
                 except BaseException as e:
+                    #print(e)
                     break
             last_len = len(imgs)
         return res_images
@@ -120,13 +131,10 @@ class YandexParser(PoolInstance):
                 self.input_queue.put(Link(link=image, recurse_level=self.link.recurse_level+1))
 
     def get_by_text(self, text):
-        url = "https://yandex.ru/images/search?from=tabbar&text={}".format(text.replace(' ', '%20'))
-        self.get_by_url(url)
-
-    def get_by_url(self, url):
+        url = "https://yandex.ru/images/search?from=tabbar&text={}".format(text.replace(' ', '%20')+'&isize=small')
         self.set_url(url)
-        self.get_links_to_images()
-        self.get_images_by_links()
+        self.log_screen()
+        return self.get_by_image_url(url, skip_to_nav=True)
 
     def to_navigation(self):
         self.wd.get('https://yandex.ru/images/')
@@ -135,9 +143,9 @@ class YandexParser(PoolInstance):
         time.sleep(1)
 
     def to_image_list(self):
-        elem = self.wd.find_element_by_class_name('cbir-similar__thumbs-inner')
-        elem = elem.find_element_by_tag_name('li')
-        elem = elem.find_element_by_tag_name('a')
+        elem = self.wd.find_element_by_class_name('CbirSimilar-MoreButton')
+        #elem = elem.find_element_by_tag_name('li')
+        #elem = elem.find_element_by_tag_name('a')
         start_url = elem.get_attribute('href')
         self.set_url(start_url)
 
@@ -154,28 +162,30 @@ class YandexParser(PoolInstance):
     def get_by_image(self, image_path):
         self.to_navigation()
         self.log_screen()
-        target_panel = self.wd.find_element_by_class_name('cbir-panel__file-input')
+        target_panel = self.wd.find_element_by_class_name('cbir-panel__dragzone')
         utils.drag_and_drop_file(target_panel, image_path)
+        self.wd.save_screenshot('D://test.png')
         time.sleep(5)
         self.log_screen()
         self.to_image_list()
         images = self.get_links_to_images()
         return images
 
-    def get_by_image_url(self, image_url):
-        self.to_navigation()
-        self.log_screen()
-        cur_elem = self.wd.find_element_by_class_name('cbir-panel__input')
-        target_panel = cur_elem.find_element_by_class_name('input__control')
-        target_panel.click()
-        target_panel.clear()
-        target_panel.send_keys(image_url)
-        time.sleep(2)
-        self.log_screen()
-        cur_elem.find_element_by_class_name('cbir-panel__search-button').click()
-        time.sleep(5)
-        self.log_screen()
-        self.to_image_list()
+    def get_by_image_url(self, image_url, skip_to_nav=False):
+        if not skip_to_nav:
+            self.to_navigation()
+            self.log_screen()
+            cur_elem = self.wd.find_element_by_class_name('cbir-panel__input')
+            target_panel = cur_elem.find_element_by_class_name('input__control')
+            target_panel.click()
+            target_panel.clear()
+            target_panel.send_keys(image_url)
+            time.sleep(2)
+            self.log_screen()
+            cur_elem.find_element_by_class_name('cbir-panel__search-button').click()
+            time.sleep(5)
+            self.log_screen()
+            self.to_image_list()
         images = self.get_links_to_images()
         return images
 
