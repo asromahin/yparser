@@ -11,6 +11,7 @@ def init_wd(headless=True):
     Initializing Chrome Webdriver from selenium library
     """
     chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument("--disable-user-media-security=true")
     if headless:
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--no-sandbox')

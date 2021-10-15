@@ -3,16 +3,18 @@ from yparser.src.utils.kill_instances import kill_chrome_instances
 import pandas as pd
 import time
 
-df = pd.read_csv('models_df.csv')
+df = pd.read_csv('mmy.csv')
+df = df.groupby(['mark', 'model', 'year']).first().reset_index()
+print(df.columns)
 
 
 def make_query(row):
-  return ' '.join([row['brend'], row['model'], row['year'], 'на улице'])
+    return ' '.join([row['mark'], row['model'], row['year'], 'во дворе'])
 
 
 STEP_SIZE = 120
 
-START_STEP = 3
+START_STEP = 44
 END_STEP = len(df)//STEP_SIZE+1
 
 for j in range(START_STEP, END_STEP):
@@ -35,7 +37,7 @@ for j in range(START_STEP, END_STEP):
 
     image_urls = list(set(image_urls))
 
-    SAVE_PATH = 'D://datasets/cars/classifications_small/'
+    SAVE_PATH = 'D://datasets/cars/mmy_small/'
 
     stepname = str(STEP + 1)
 
