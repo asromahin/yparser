@@ -1,5 +1,6 @@
 import time
 from queue import Queue
+from selenium.webdriver.common.by import By
 
 from yparser.src.pool import PoolInstance, Pool
 from yparser.src.parser import utils
@@ -96,13 +97,14 @@ class YandexParser(PoolInstance):
         #counter = 0
         res_images = []
         while len(res_images) < self.limits[self.link.recurse_level]:
-            #imgs = self.wd.find_elements_by_class_name('serp-item__thumb')
+            #imgs = self.wd.find_elements(By.CLASS_NAME, 'serp-item__thumb')
             #time.sleep(1)
-            imgs = self.wd.find_elements_by_class_name('serp-item__link')
+
+            imgs = self.wd.find_elements(By.CLASS_NAME, 'serp-item__link')
             #print(len(imgs))
             if last_len == len(imgs):
                 try:
-                    elem = self.wd.find_elements_by_class_name('button2_size_l')[-1]#[-1].click()
+                    elem = self.wd.find_elements(By.CLASS_NAME, 'button2_size_l')[-1]#[-1].click()
                     imgs = [self.get_image_link(img) for img in imgs]
                     if len(res_images) + len(imgs) >= self.limits[self.link.recurse_level]:
                         dif = len(res_images) + len(imgs) - self.limits[self.link.recurse_level]
@@ -139,11 +141,11 @@ class YandexParser(PoolInstance):
     def to_navigation(self):
         self.wd.get('https://yandex.ru/images/')
         time.sleep(1)
-        self.wd.find_element_by_class_name('input__cbir-button').click()
+        self.wd.find_element(By.CLASS_NAME, 'input__cbir-button').click()
         time.sleep(1)
 
     def to_image_list(self):
-        elem = self.wd.find_element_by_class_name('CbirSimilar-MoreButton')
+        elem = self.wd.find_element(By.CLASS_NAME, 'CbirSimilar-MoreButton')
         #elem = elem.find_element_by_tag_name('li')
         #elem = elem.find_element_by_tag_name('a')
         start_url = elem.get_attribute('href')
@@ -162,7 +164,7 @@ class YandexParser(PoolInstance):
     def get_by_image(self, image_path):
         self.to_navigation()
         self.log_screen()
-        target_panel = self.wd.find_element_by_class_name('cbir-panel__dragzone')
+        target_panel = self.wd.find_element(By.CLASS_NAME, 'cbir-panel__dragzone')
         utils.drag_and_drop_file(target_panel, image_path)
         time.sleep(5)
         self.log_screen()
@@ -174,18 +176,18 @@ class YandexParser(PoolInstance):
         if not skip_to_nav:
             self.to_navigation()
             self.log_screen()
-            #self.wd.find_element_by_class_name('input__cbir-button').click()
+            #self.wd.find_element(By.CLASS_NAME, 'input__cbir-button').click()
             #time.sleep(1)
-            cur_elem = self.wd.find_element_by_class_name('CbirPanel-PopupBody')
+            cur_elem = self.wd.find_element(By.CLASS_NAME, 'CbirPanel-PopupBody')
 
-            target_panel = cur_elem.find_element_by_tag_name('input')
+            target_panel = cur_elem.find_element(By.TAG_NAME, 'input')
             target_panel.click()
             target_panel.clear()
             target_panel.send_keys(image_url)
             time.sleep(1)
             self.log_screen()
             #print('hi')
-            cur_elem.find_element_by_class_name('CbirPanel-UrlFormButton').click()
+            cur_elem.find_element(By.CLASS_NAME, 'CbirPanel-UrlFormButton').click()
             time.sleep(5)
             self.log_screen()
             self.to_image_list()

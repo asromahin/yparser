@@ -1,4 +1,3 @@
-import wandb
 import os
 import pandas as pd
 
@@ -20,6 +19,7 @@ class YParser:
             parse_type='url',
     ):
         if wandb_log:
+            import wandb
             wandb.init(project=wandb_project, name=name, reinit=True)
         self.save_path = os.path.join(save_folder, name)
         self.logger = Logger(wandb_log=wandb_log)
